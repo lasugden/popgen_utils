@@ -1,0 +1,7 @@
+{
+    "paths": {
+        "data": "/data",
+        "output": "/output",
+        "metadata": ""
+    }
+}

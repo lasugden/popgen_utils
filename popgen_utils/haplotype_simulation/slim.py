@@ -1,0 +1,112 @@
+from datetime import datetime
+import os
+import os.path as opath
+import yaml
+try:
+    import importlib.resources as ilresources
+except ImportError:
+    try:
+        import importlib_resources as ilresources
+    except ImportError:
+        raise ImportError('Must install backport of importlib_resources if not using Python >= 3.7')
+
+from popgen_utils import config
+from popgen_utils.misc import hashing
+from popgen_utils.haplotype_simulation import slim_population_definitions
+
+
+def slim_definition_to_input(definition_name,
+                             selection_coefficient,
+                             sweep_population,
+                             sweep_time,
+                             project_name,
+                             model_name,
+                             data_path=None):
+    """
+    Read in a slim definition file and replace with the correct values from
+    input data.
+
+    Args:
+        definition_name (str): name of the definition file, e.g. gravel_model
+        selection_coefficient (float or list of floats): the selection
+            coefficients to model, e.g. [0.06,0.08,0.1,0.12]
+        sweep_population (str or list of str): the populations to compare,
+            e.g. ['p1', 'p2', 'p3']
+        sweep_time (int or list of ints): number of kiloyears of sweep starts,
+            e.g. [5, 10, 15, 20]
+        project_name (str): name of the project directory into which data will
+            be saved, e.g. 'name_of_demographic_model_with_30000_yrs_selection'
+        model_name (str): the name of the particular model,
+            e.g. 'san_3pop_sweep_simulation'
+        data_path (str, optional): path into which the output will be saved.
+            Defaults to the directory from config
+
+    """
+    # Format the appropriate model file
+    # noinspection PyTypeChecker
+    txt = ilresources.open_text(slim_population_definitions, f'{definition_name}.txt').read()
+
+    # Make paths
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+
+    base_path = opath.join(data_path, project_name)
+    if not opath.exists(base_path):
+        os.mkdir(base_path)
+    slim_path = opath.join(base_path, 'slim')
+    if not opath.exists(slim_path):
+        os.mkdir(slim_path)
+    slim_model_path = opath.join(slim_path, model_name)
+    if not opath.exists(slim_model_path):
+        os.mkdir(slim_model_path)
+
+    # Make sure inputs are iterable
+    selection_coefficient = [selection_coefficient] if isinstance(selection_coefficient, float) \
+        else selection_coefficient
+    sweep_population = [sweep_population] if isinstance(selection_coefficient, str) else sweep_population
+    sweep_time = [sweep_time] if isinstance(sweep_time, int) else sweep_time
+
+    # Save the metadata
+    with open(opath.join(slim_path, f'{model_name}.yaml'), 'wb') as fp:
+        yaml.dump({
+            'date': datetime.now().strftime('%y%m%d'),
+            'definition_name': definition_name,
+            'selection_coefficient': selection_coefficient,
+            'sweep_population': sweep_population,
+            'sweep_time': sweep_time,
+            'project_name': project_name,
+            'model_name': model_name,
+            'template_hash': hashing.hash(txt),
+        }, fp, encoding='utf-8')
+
+    # Iterate
+    for coeff in selection_coefficient:
+        for pop in sweep_population:
+            for time in sweep_time:
+                # Convert sweep time into generations
+                sweep_start_generation = 58000 - int(time*1000.0/25)
+
+                parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                                        f'pop-{pop}_start-{sweep_start_generation}')
+
+                # Format the text appropriately
+                formatted_txt = txt.format(**{
+                    'selection_coefficient': coeff,
+                    'sweep_population': pop,
+                    'sweep_start_generation': sweep_start_generation,
+                    'vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}.vcf'),
+                    'ms_file_output': opath.join(slim_model_path, f'{parameter_model_name}_ms.txt'),
+                })
+
+                fp = open(opath.join(slim_model_path, f'{parameter_model_name}.slim'), 'w')
+                fp.write(formatted_txt)
+                fp.close()
+
+
+if __name__ == '__main__':
+    slim_definition_to_input('gravel_model',
+                             selection_coefficient=[0.06, 0.08],
+                             sweep_population=['p1', 'p2', 'p3'],
+                             sweep_time=[10],
+                             project_name='test_project_1',
+                             model_name='test_gravel_1')
