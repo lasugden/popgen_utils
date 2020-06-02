@@ -103,6 +103,23 @@ def slim_definition_to_input(definition_name,
                 fp.close()
 
 
+def run_slim(project_name, model_name):
+    """
+    Run the slim binary. Use the same names as those used for definition
+    creation.
+
+    Args:
+        project_name (str): name of the project directory into which data was
+            saved, e.g. 'name_of_demographic_model_with_30000_yrs_selection'
+        model_name (str): the name of the particular model,
+            e.g. 'san_3pop_sweep_simulation'
+
+    Returns:
+
+    """
+
+
+
 if __name__ == '__main__':
     slim_definition_to_input('gravel_model',
                              selection_coefficient=[0.06, 0.08],
