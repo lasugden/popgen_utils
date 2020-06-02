@@ -13,7 +13,7 @@ python setup.py develop --user
 
 If instead you will be using the utilities, install with:
 ```
-pip install git+ssh://git@gitlab.com/govinisrc/dsml_utils.git
+pip install --upgrade git+git://github.com/lasugden/popgen_utils.git
 ```
 
 Next, set your main data directory and output directory. To do so, open python and type
