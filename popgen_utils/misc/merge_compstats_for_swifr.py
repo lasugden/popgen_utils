@@ -3,6 +3,82 @@ import pandas as pd
 import os
 
 
+def read_file_ihs(directory_path, seed, pop_of_interest, pop_reference=None, key_column='iHS'):
+    """Read ihs files
+
+    Args:
+        directory_path (str): path to directory containing files
+        seed (int): seed used to create the files
+        pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
+        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
+    """
+    ihs_path = os.path.join(directory_path, '%i_%s.ihs.out.100bins.norm' % (seed, pop_of_interest))
+    if not os.path.exists(ihs_path):
+        return None
+    df = pd.read_csv(ihs_path, skiprows=0, header=None, delim_whitespace=True, usecols=range(7),
+                     names=['locus_name', 'pos', 'freq', 'ihh1', 'ihh2', 'ihs', key_column])
+    return df[['locus_name', 'pos', key_column]]
+
+
+def read_file_xpehh(directory_path, seed, pop_of_interest, pop_reference=None, key_column='XP-EHH'):
+    """Read XPEHH files
+
+    Args:
+        directory_path (str): path to directory containing files
+        seed (int): seed used to create the files
+        pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
+        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
+    """
+    xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, pop_reference))
+    if not os.path.exists(xpehh_path):
+        return None
+    df = pd.read_csv(xpehh_path, skiprows=1, header=None, delim_whitespace=True,
+                     names=['locus_name', 'pos', 'gpos', 'p1', 'ihh1', 'p2', 'ihh2', key_column])
+    return df[['pos', key_column]]
+
+
+def read_file_isafe(directory_path, seed, pop_of_interest, pop_reference=None, key_column='iSAFE'):
+    """Read isafe files
+
+    Args:
+        directory_path (str): path to directory containing files
+        seed (int): seed used to create the files
+        pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
+        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
+    """
+    isafe_path = os.path.join(directory_path, '%i_%s.iSAFE.out' % (seed, pop_of_interest))
+    if not os.path.exists(isafe_path):
+        return None
+    df = pd.read_csv(isafe_path, skiprows=1, header=None, delim_whitespace=True,
+                     names=['pos', key_column, 'daf'])
+    # Match locations for 0-indexing and 1-indexing
+    df['pos'] -= 1
+    return df[['pos', key_column]]
+
+
+def read_file_fst(directory_path, seed, pop_of_interest, pop_reference=None, key_column='Fst'):
+    """Read fst files
+
+    Args:
+        directory_path (str): path to directory containing files
+        seed (int): seed used to create the files
+        pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
+        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
+    """
+    fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, pop_reference))
+    if not os.path.exists(fst_path):
+        return None
+    df = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
+                     names=['chrom', 'pos', key_column])
+    # Match locations for 0-indexing and 1-indexing
+    df['pos'] -= 1
+    return df[['pos', key_column]]
+
+
 def get_seeds(path):
     """
     From a directory, get all seed values by searching over names
@@ -33,46 +109,30 @@ def read_files(directory_path, seed, pop_of_interest, pop_reference):
         Pandas DataFrame: the merged output of the statistics
 
     """
-    ihs_path = os.path.join(directory_path, '%i_%s.ihs.out.100bins.norm' % (seed, pop_of_interest))
-    xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, pop_reference))
-    isafe_path = os.path.join(directory_path, '%i_%s.iSAFE.out' % (seed, pop_of_interest))
-    fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, pop_reference))
+    df = read_file_ihs(directory_path, seed, pop_of_interest, pop_reference)
+    if df is None:
+        raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
 
-    ihs_col, xpehh_col, isafe_col, fst_col = ('iHS', 'XP-EHH', 'Fst', 'iSAFE')
+    # Read in files
+    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, pop_reference)
+    if df_xpehh is not None:
+        df = df.merge(df_xpehh, how='outer', on='pos')
+    
+    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, pop_reference)
+    if df_isafe is not None:
+        df = df.merge(df_isafe, how='outer', on='pos')
 
-    if (os.path.exists(ihs_path) and
-            os.path.exists(xpehh_path) and
-            os.path.exists(isafe_path) and
-            os.path.exists(fst_path)):
-        # Read in files
-        df_ihs = pd.read_csv(ihs_path, skiprows=0, header=None, delim_whitespace=True, usecols=range(7),
-                             names=['locus_name', 'pos', 'freq', 'ihh1', 'ihh2', 'ihs', ihs_col])
-        df_xpehh = pd.read_csv(xpehh_path, skiprows=1, header=None, delim_whitespace=True,
-                               names=['locus_name', 'pos', 'gpos', 'p1', 'ihh1', 'p2', 'ihh2', xpehh_col])
-        df_isafe = pd.read_csv(isafe_path, skiprows=1, header=None, delim_whitespace=True,
-                               names=['pos', isafe_col, 'daf'])
-        df_fst = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
-                             names=['chrom', 'pos', fst_col])
+    df_fst = read_file_fst(directory_path, seed, pop_of_interest, pop_reference)
+    if df_fst is not None:
+        df = df.merge(df_fst, how='outer', on='pos')
 
-        # Match locations for 0-indexing and 1-indexing
-        df_isafe['pos'] -= 1
-        df_fst['pos'] -= 1
+    # Fill in NaNs appropriately
+    nan_names = df['locus_name'].isnull()
+    df.loc[nan_names, 'locus_name'] = 'SNP_POS_' + df.loc[nan_names, 'pos'].apply(str)
+    df = df.loc[df.isnull().sum(axis=1) < 4, :]
+    df = df.fillna(-998)
 
-        # Merge dataframes
-        df = df_ihs[['locus_name', 'pos', ihs_col]]\
-            .merge(df_xpehh[['pos', xpehh_col]], how='outer', on='pos')\
-            .merge(df_isafe[['pos', isafe_col]], how='outer', on='pos')\
-            .merge(df_fst[['pos', fst_col]], how='outer', on='pos')
-
-        # Fill in NaNs appropriately
-        nan_names = df['locus_name'].isnull()
-        df.loc[nan_names, 'locus_name'] = 'SNP_POS_' + df.loc[nan_names, 'pos'].apply(str)
-        df = df.loc[df.isnull().sum(axis=1) < 4, :]
-        df = df.fillna(-998)
-
-        return df
-    else:
-        return None
+    return df
 
 
 def write_output(directory_path, seed, population, df):
