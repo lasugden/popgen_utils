@@ -3,14 +3,14 @@ import pandas as pd
 import os
 
 
-def read_file_ihs(directory_path, seed, pop_of_interest, pops_reference=None, key_column='iHS'):
+def read_file_ihs(directory_path, seed, pop_of_interest, refpop=None, key_column='iHS'):
     """Read ihs files
 
     Args:
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        refpop (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
     ihs_path = os.path.join(directory_path, '%i_%s.ihs.out.100bins.norm' % (seed, pop_of_interest))
@@ -21,17 +21,17 @@ def read_file_ihs(directory_path, seed, pop_of_interest, pops_reference=None, ke
     return df[['locus_name', 'pos', key_column]]
 
 
-def read_file_xpehh(directory_path, seed, pop_of_interest, pops_reference=None, key_column='XP-EHH'):
+def read_file_xpehh(directory_path, seed, pop_of_interest, refpop, key_column='XP-EHH'):
     """Read XPEHH files
 
     Args:
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        refpop (str): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, pops_reference))
+    xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, refpop))
     if not os.path.exists(xpehh_path):
         return None
     df = pd.read_csv(xpehh_path, skiprows=1, header=None, delim_whitespace=True,
@@ -39,7 +39,7 @@ def read_file_xpehh(directory_path, seed, pop_of_interest, pops_reference=None, 
     return df[['pos', key_column]]
 
 
-def read_file_isafe(directory_path, seed, pop_of_interest, pops_reference=None, key_column='iSAFE'):
+def read_file_isafe(directory_path, seed, pop_of_interest, refpop=None, key_column='iSAFE'):
     """Read isafe files
 
     Args:
@@ -59,17 +59,17 @@ def read_file_isafe(directory_path, seed, pop_of_interest, pops_reference=None, 
     return df[['pos', key_column]]
 
 
-def read_file_fst(directory_path, seed, pop_of_interest, pops_reference=None, key_column='Fst'):
+def read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='Fst'):
     """Read fst files
 
     Args:
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        refpop (str): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, pops_reference))
+    fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, refpop))
     if not os.path.exists(fst_path):
         return None
     df = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
@@ -95,7 +95,7 @@ def get_seeds(path):
     return seeds
 
 
-def read_files(directory_path, seed, pop_of_interest, pops_reference):
+def read_files(directory_path, seed, pop_of_interest, refpop):
     """
     Read in IHS, XPEHH, ISAFE, and FST files, merge on position, and return all statistics
 
@@ -103,26 +103,26 @@ def read_files(directory_path, seed, pop_of_interest, pops_reference):
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pops_reference (str): in the format 'pN' where N is an integer in 1-3
+        refpop (str): in the format 'pN' where N is an integer in 1-3
 
     Returns:
         Pandas DataFrame: the merged output of the statistics
 
     """
-    df = read_file_ihs(directory_path, seed, pop_of_interest, pops_reference)
+    df = read_file_ihs(directory_path, seed, pop_of_interest, refpop)
     if df is None:
         raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
 
     # Read in files
-    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, pops_reference)
+    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, refpop)
     if df_xpehh is not None:
         df = df.merge(df_xpehh, how='outer', on='pos')
     
-    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, pops_reference)
+    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, refpop)
     if df_isafe is not None:
         df = df.merge(df_isafe, how='outer', on='pos')
 
-    df_fst = read_file_fst(directory_path, seed, pop_of_interest, pops_reference)
+    df_fst = read_file_fst(directory_path, seed, pop_of_interest, refpop)
     if df_fst is not None:
         df = df.merge(df_fst, how='outer', on='pos')
 
