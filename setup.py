@@ -18,9 +18,9 @@ setup(
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
     install_requires=[
-        'numpy>=1.8',
-        'scipy>=0.19.0',
-        'pandas>=0.21.1',
+        'numpy>=1.11',
+        'scipy>=0.18.0',
+        'pandas>=0.18.0',
         'pyyaml',
         # 'scikit-learn>=0.11',
     ],
