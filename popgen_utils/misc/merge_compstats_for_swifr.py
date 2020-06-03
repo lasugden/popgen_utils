@@ -3,14 +3,14 @@ import pandas as pd
 import os
 
 
-def read_file_ihs(directory_path, seed, pop_of_interest, pop_reference=None, key_column='iHS'):
+def read_file_ihs(directory_path, seed, pop_of_interest, pops_reference=None, key_column='iHS'):
     """Read ihs files
 
     Args:
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
     ihs_path = os.path.join(directory_path, '%i_%s.ihs.out.100bins.norm' % (seed, pop_of_interest))
@@ -21,17 +21,17 @@ def read_file_ihs(directory_path, seed, pop_of_interest, pop_reference=None, key
     return df[['locus_name', 'pos', key_column]]
 
 
-def read_file_xpehh(directory_path, seed, pop_of_interest, pop_reference=None, key_column='XP-EHH'):
+def read_file_xpehh(directory_path, seed, pop_of_interest, pops_reference=None, key_column='XP-EHH'):
     """Read XPEHH files
 
     Args:
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, pop_reference))
+    xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, pops_reference))
     if not os.path.exists(xpehh_path):
         return None
     df = pd.read_csv(xpehh_path, skiprows=1, header=None, delim_whitespace=True,
@@ -39,14 +39,14 @@ def read_file_xpehh(directory_path, seed, pop_of_interest, pop_reference=None, k
     return df[['pos', key_column]]
 
 
-def read_file_isafe(directory_path, seed, pop_of_interest, pop_reference=None, key_column='iSAFE'):
+def read_file_isafe(directory_path, seed, pop_of_interest, pops_reference=None, key_column='iSAFE'):
     """Read isafe files
 
     Args:
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
     isafe_path = os.path.join(directory_path, '%i_%s.iSAFE.out' % (seed, pop_of_interest))
@@ -59,17 +59,17 @@ def read_file_isafe(directory_path, seed, pop_of_interest, pop_reference=None, k
     return df[['pos', key_column]]
 
 
-def read_file_fst(directory_path, seed, pop_of_interest, pop_reference=None, key_column='Fst'):
+def read_file_fst(directory_path, seed, pop_of_interest, pops_reference=None, key_column='Fst'):
     """Read fst files
 
     Args:
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pop_reference (str, unused): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, pop_reference))
+    fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, pops_reference))
     if not os.path.exists(fst_path):
         return None
     df = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
@@ -95,7 +95,7 @@ def get_seeds(path):
     return seeds
 
 
-def read_files(directory_path, seed, pop_of_interest, pop_reference):
+def read_files(directory_path, seed, pop_of_interest, pops_reference):
     """
     Read in IHS, XPEHH, ISAFE, and FST files, merge on position, and return all statistics
 
@@ -103,26 +103,26 @@ def read_files(directory_path, seed, pop_of_interest, pop_reference):
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        pop_reference (str): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str): in the format 'pN' where N is an integer in 1-3
 
     Returns:
         Pandas DataFrame: the merged output of the statistics
 
     """
-    df = read_file_ihs(directory_path, seed, pop_of_interest, pop_reference)
+    df = read_file_ihs(directory_path, seed, pop_of_interest, pops_reference)
     if df is None:
         raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
 
     # Read in files
-    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, pop_reference)
+    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, pops_reference)
     if df_xpehh is not None:
         df = df.merge(df_xpehh, how='outer', on='pos')
     
-    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, pop_reference)
+    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, pops_reference)
     if df_isafe is not None:
         df = df.merge(df_isafe, how='outer', on='pos')
 
-    df_fst = read_file_fst(directory_path, seed, pop_of_interest, pop_reference)
+    df_fst = read_file_fst(directory_path, seed, pop_of_interest, pops_reference)
     if df_fst is not None:
         df = df.merge(df_fst, how='outer', on='pos')
 
@@ -135,52 +135,55 @@ def read_files(directory_path, seed, pop_of_interest, pop_reference):
     return df
 
 
-def write_output(directory_path, seed, population, df):
+def write_output(directory_path, seed, pop_of_interest, df):
     """
     Write the merged output to a file
 
     Args:
         directory_path (str): directory into which the file should be saved
         seed (int): the seed used to create the file type OR combination of metadata
-        population (str): of the type pN where N is 1-2
+        pop_of_interest (str): of the type pN where N is 1-2
         df (Pandas DataFrame): the combined statistics for writing
 
     """
     seed = '' if seed is None else seed
-    file_name = '%s_%s_allstats.txt' % (str(seed), population)
+    file_name = '%s_%s_allstats.txt' % (str(seed), pop_of_interest)
     file_path = os.path.join(directory_path, file_name)
     df.to_csv(file_path, sep='\t', index=False)
 
 
 def merge_all_seeds_and_write(input_directory,
                               output_directory,
-                              pops_of_interest,
-                              pop_reference):
+                              pop_of_interest,
+                              pops_reference):
     """
     Iterate over all seeds in a directory and merge.
 
     Args:
         input_directory (str): the directory in which all of the input data lives
         output_directory (str): the directory to which the combined statistics should be written
-        pops_of_interest (str/list of str): in the format 'pN' where N is an integer in 1-3
-        pop_reference (str): in the format 'pN' where N is an integer in 1-3
+        pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str/list of str): in the format 'pN' where N is an integer in 1-3
 
     """
-    pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
+    #pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
+    pops_reference = [pops_reference] if isinstance(pops_reference, str) else pops_reference
     seeds = get_seeds(input_directory)
     for seed in seeds:
-        for population in pops_of_interest:
-            df = read_files(input_directory, seed, population, pop_reference)
+        #for population in pops_of_interest:
+        for refpop in pops_reference:
+            #df = read_files(input_directory, seed, pop_of_interest, pops_reference)
+            df = read_files(input_directory, seed, pop_of_interest, refpop)
             if df is None:
-                print('WARNING: some files are missing for seed %i and population %s' % (seed, population))
+                print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
             else:
-                write_output(output_directory, seed, population, df)
+                write_output(output_directory, seed, pop_of_interest, df)
 
 
 def merge_all_seeds_and_extract(input_directory,
                                 output_directory,
-                                pops_of_interest,
-                                pop_reference,
+                                pop_of_interest,
+                                pops_reference,
                                 sweep_pos,
                                 additional_name_text=None):
     """
@@ -189,26 +192,28 @@ def merge_all_seeds_and_extract(input_directory,
     Args:
         input_directory (str): the directory in which all of the input data lives
         output_directory (str): the directory to which the combined statistics should be written
-        pops_of_interest (str/list of str): in the format 'pN' where N is an integer in 1-3
-        pop_reference (str): in the format 'pN' where N is an integer in 1-3
+        pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str/list of str): in the format 'pN' where N is an integer in 1-3
         sweep_pos (int): the position of the sweep to extract
         additional_name_text (str, optional): if set, this will be appended to filename
 
     """
-    pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
+    #pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
+    pops_reference = [pops_reference] if isinstance(pops_reference,str) else pops_reference
     seeds = get_seeds(input_directory)
     combined = []
-    for population in pops_of_interest:
+    #for population in pops_of_interest:
+    for refpop in pops_reference:
         for seed in seeds:
-            df = read_files(input_directory, seed, population, pop_reference)
+            df = read_files(input_directory, seed, pop_of_interest, refpop)
             if df is None:
-                print('WARNING: some files are missing for seed %i and population %s' % (seed, population))
+                print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
             else:
                 combined.append(df.loc[df['pos'] == sweep_pos, :])
 
         if len(combined) > 0:
             df = pd.concat(combined, axis=0, ignore_index=True)
-            write_output(output_directory, additional_name_text, population, df)
+            write_output(output_directory, additional_name_text, pop_of_interest, df)
 
 
 def merge_seeds_over_stp(input_directory,
@@ -216,8 +221,8 @@ def merge_seeds_over_stp(input_directory,
                          selection_strength,
                          time_of_sweep,
                          pop_of_sweep,
-                         pops_of_interest,
-                         pop_reference,
+                         pop_of_interest,
+                         pops_reference,
                          sweep_pos=None):
     """
     Iterate over populations, selection strengths, and sweep times and extract combined statistics.
@@ -227,27 +232,28 @@ def merge_seeds_over_stp(input_directory,
         output_directory (str): path into which allstats will be written
         selection_strength (float/list of floats): selection strength
         time_of_sweep (int/list of ints): kiloyears of sweep
-        pops_of_interest (str/list of str): in the format 'pN' where N is an integer in 1-3
+        pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
         pop_of_sweep (str): the population in which the sweep occured
-        pop_reference (str): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str/list of str): in the format 'pN' where N is an integer in 1-3
         sweep_pos (int, optional): the position of the sweep to extract
             if None, do not extract a single sweep_pos, but rather save each file
 
     """
     selection_strength = [selection_strength] if not isinstance(selection_strength, list) else selection_strength
     time_of_sweep = [time_of_sweep] if not isinstance(time_of_sweep, list) else time_of_sweep
-    pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
+    #pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
+    pops_reference = [pops_reference] if isinstance(pops_reference,str) else pops_reference
 
     for sel in selection_strength:
         for t in time_of_sweep:
             sub_input = os.path.join(input_directory, pop_of_sweep, 'T%i' % t, 's%s' % sel)
             if sweep_pos is None:
-                merge_all_seeds_and_write(sub_input, output_directory, pops_of_interest, pop_reference)
+                merge_all_seeds_and_write(sub_input, output_directory, pop_of_interest, pops_reference)
             else:
                 merge_all_seeds_and_extract(sub_input,
                                             output_directory,
-                                            pops_of_interest,
-                                            pop_reference,
+                                            pop_of_interest,
+                                            pops_reference,
                                             sweep_pos,
                                             't%i_s%s' % (t, sel))
 
@@ -256,8 +262,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--read_path', help='Path to the directory to iterate over', type=str)
     parser.add_argument('--write_path', help='Path to the directory to write into. Must already exist.', type=str)
-    parser.add_argument('--pops_of_interest', help='Comma-separated list of pops (pN; with no spaces).', type=str)
-    parser.add_argument('--pop_reference', help='Reference population (pN).', type=str)
+    parser.add_argument('--pop_of_interest', help='Comma-separated list of pops (pN; with no spaces).', type=str)
+    parser.add_argument('--pops_reference', help='Comma-separated list of reference pops (pN; with no spaces).', type=str)
     parser.add_argument('--type', help='Can be neutral or sweep', type=str, choices=['neutral', 'sweep'])
     parser.add_argument('--times_of_sweep', help='Comma-separated list of integer times of sweep', type=str)
     parser.add_argument('--selection_strengths', help='Comma-separated list of float selection strengths', type=str)
@@ -269,21 +275,23 @@ def main():
     if args.type == 'neutral':
         merge_all_seeds_and_write(args.read_path,
                                   args.write_path,
-                                  args.pops_of_interest.split(','),
-                                  args.pop_reference)
+                                  #args.pops_of_interest.split(','),
+                                  args.pop_of_interest,
+                                  args.pops_reference.split(','))
     elif args.type == 'sweep':
         merge_seeds_over_stp(args.read_path,
                              args.write_path,
                              args.selection_strengths.split(','),
                              [int(t) for t in args.times_of_sweep.split(',')],
                              args.pop_of_sweep,
-                             args.pops_of_interest.split(','),
-                             args.pop_reference,
+                             args.pop_of_interest,
+                             #args.pops_of_interest.split(','),
+                             args.pops_reference.split(','),
                              sweep_pos=args.sweep_pos)
 
 
 if __name__ == '__main__':
     main()
     # Run with python merge_compstats.py --read_path ../simulations/compstats/sweep/
-    # --write_path ../training/simulations/sweep/ --pops_of_interest p1,p2 --pop_reference p3 --type sweep
+    # --write_path ../training/simulations/sweep/ --pop_of_interest p1 --pops_reference p3 --type sweep
     # --times_of_sweep 10,15,20,25,30 --selection_strengths 0.015,0.025,0.035,0.045,0.06,0.08,0.1 --pop_of_sweep pa
