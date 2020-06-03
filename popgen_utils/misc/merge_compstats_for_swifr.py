@@ -135,19 +135,20 @@ def read_files(directory_path, seed, pop_of_interest, pops_reference):
     return df
 
 
-def write_output(directory_path, seed, pop_of_interest, df):
+def write_output(directory_path, seed, pop_of_interest, refpop, df):
     """
     Write the merged output to a file
 
     Args:
         directory_path (str): directory into which the file should be saved
         seed (int): the seed used to create the file type OR combination of metadata
-        pop_of_interest (str): of the type pN where N is 1-2
+        pop_of_interest (str): of the type pN where N is 1+
+        refpop (str): of the type pN where N is 1+
         df (Pandas DataFrame): the combined statistics for writing
 
     """
     seed = '' if seed is None else seed
-    file_name = '%s_%s_allstats.txt' % (str(seed), pop_of_interest)
+    file_name = '%s_%s_%s_allstats.txt' % (str(seed), pop_of_interest,refpop)
     file_path = os.path.join(directory_path, file_name)
     df.to_csv(file_path, sep='\t', index=False)
 
@@ -177,7 +178,7 @@ def merge_all_seeds_and_write(input_directory,
             if df is None:
                 print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
             else:
-                write_output(output_directory, seed, pop_of_interest, df)
+                write_output(output_directory, seed, pop_of_interest, refpop, df)
 
 
 def merge_all_seeds_and_extract(input_directory,
@@ -213,7 +214,7 @@ def merge_all_seeds_and_extract(input_directory,
 
         if len(combined) > 0:
             df = pd.concat(combined, axis=0, ignore_index=True)
-            write_output(output_directory, additional_name_text, pop_of_interest, df)
+            write_output(output_directory, additional_name_text, pop_of_interest, refpop, df)
 
 
 def merge_seeds_over_stp(input_directory,
