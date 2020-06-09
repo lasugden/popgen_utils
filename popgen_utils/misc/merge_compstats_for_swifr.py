@@ -32,10 +32,17 @@ def read_file_xpehh(directory_path, seed, pop_of_interest, refpop, key_column='X
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
     xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, refpop))
-    if not os.path.exists(xpehh_path):
+    xpehh_path_alt = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, refpop, pop_of_interest))
+    if not os.path.exists(xpehh_path) and not os.path.exists(xpehh_path_alt):
         return None
-    df = pd.read_csv(xpehh_path, skiprows=1, header=None, delim_whitespace=True,
+
+    if os.path.exists(xpehh_path):
+        df = pd.read_csv(xpehh_path, skiprows=1, header=None, delim_whitespace=True,
                      names=['locus_name', 'pos', 'gpos', 'p1', 'ihh1', 'p2', 'ihh2', key_column])
+    else:
+        df = pd.read_csv(xpehh_path_alt, skiprows=1, header=None, delim_whitespace=True,
+                         names=['locus_name', 'pos', 'gpos', 'p1', 'ihh1', 'p2', 'ihh2', key_column])
+        df[key_column] = -1*df[key_column]
     return df[['pos', key_column]]
 
 
@@ -70,9 +77,14 @@ def read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='Fst
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
     fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, refpop))
-    if not os.path.exists(fst_path):
+    fst_path_alt = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, refpop, pop_of_interest))
+    if not os.path.exists(fst_path) and not os.path.exists(fst_path_alt):
         return None
-    df = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
+    if os.path.exists(fstpath):
+        df = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
+                     names=['chrom', 'pos', key_column])
+    else:
+        df = pd.read_csv(fst_path_alt, skiprows=1, header=None, delim_whitespace=True,
                      names=['chrom', 'pos', key_column])
     # Match locations for 0-indexing and 1-indexing
     df['pos'] -= 1
