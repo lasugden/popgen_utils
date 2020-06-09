@@ -114,21 +114,29 @@ def read_files(directory_path, seed, pop_of_interest, refpop):
         raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
 
     # Read in files
-    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, refpop)
+    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, refpop, )
     if df_xpehh is not None:
         df = df.merge(df_xpehh, how='outer', on='pos')
+    else:
+        print('WARNING: XPEHH file not found')
     
     df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, refpop)
     if df_isafe is not None:
         df = df.merge(df_isafe, how='outer', on='pos')
+    else:
+        print('WARNING: iSAFE file not found')
 
-    df_fst = read_file_fst(directory_path, seed, pop_of_interest, refpop)
+    df_fst = read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='fst_'+refpop)
     if df_fst is not None:
         df = df.merge(df_fst, how='outer', on='pos')
+    else:
+        print('WARNING: FST file not found')
 
     # Fill in NaNs appropriately
     nan_names = df['locus_name'].isnull()
-    df.loc[nan_names, 'locus_name'] = 'SNP_POS_' + df.loc[nan_names, 'pos'].apply(str)
+    if nan_names.sum() > 0:
+        df.loc[nan_names, 'locus_name'] = 'SNP_POS_' + df.loc[nan_names, 'pos'].apply(str)
+
     df = df.loc[df.isnull().sum(axis=1) < 4, :]
     df = df.fillna(-998)
 
@@ -167,13 +175,11 @@ def merge_all_seeds_and_write(input_directory,
         pops_reference (str/list of str): in the format 'pN' where N is an integer in 1-3
 
     """
-    #pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
     pops_reference = [pops_reference] if isinstance(pops_reference, str) else pops_reference
     seeds = get_seeds(input_directory)
     for seed in seeds:
-        #for population in pops_of_interest:
+        # for population in pops_of_interest:
         for refpop in pops_reference:
-            #df = read_files(input_directory, seed, pop_of_interest, pops_reference)
             df = read_files(input_directory, seed, pop_of_interest, refpop)
             if df is None:
                 print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
