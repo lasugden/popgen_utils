@@ -95,7 +95,7 @@ def get_seeds(path):
     return seeds
 
 
-def read_files(directory_path, seed, pop_of_interest, refpop):
+def read_files(directory_path, seed, pop_of_interest, pops_reference):
     """
     Read in IHS, XPEHH, ISAFE, and FST files, merge on position, and return all statistics
 
@@ -103,34 +103,37 @@ def read_files(directory_path, seed, pop_of_interest, refpop):
         directory_path (str): path to directory containing files
         seed (int): seed used to create the files
         pop_of_interest (str): in the format 'pN' where N is an integer in 1-3
-        refpop (str): in the format 'pN' where N is an integer in 1-3
+        pops_reference (str/list of str): in the format 'pN' where N is an integer in 1-3
 
     Returns:
         Pandas DataFrame: the merged output of the statistics
 
     """
-    df = read_file_ihs(directory_path, seed, pop_of_interest, refpop)
+    df = read_file_ihs(directory_path, seed, pop_of_interest, refpop=None, key_column='ihs')
     if df is None:
         raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
 
     # Read in files
-    df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, refpop, )
-    if df_xpehh is not None:
-        df = df.merge(df_xpehh, how='outer', on='pos')
-    else:
-        print('WARNING: XPEHH file not found')
-    
-    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, refpop)
+
+    for refpop in pops_reference:
+        df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, refpop, key_column='xpehh_'+refpop )
+        if df_xpehh is not None:
+            df = df.merge(df_xpehh, how='outer', on='pos')
+        else:
+            print('WARNING: XPEHH file not found: refpop='+refpop)
+
+    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, refpop=None, key_column='isafe')
     if df_isafe is not None:
         df = df.merge(df_isafe, how='outer', on='pos')
     else:
         print('WARNING: iSAFE file not found')
 
-    df_fst = read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='fst_'+refpop)
-    if df_fst is not None:
-        df = df.merge(df_fst, how='outer', on='pos')
-    else:
-        print('WARNING: FST file not found')
+    for refpop in pops_reference:
+        df_fst = read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='fst_'+refpop)
+        if df_fst is not None:
+            df = df.merge(df_fst, how='outer', on='pos')
+        else:
+            print('WARNING: FST file not found')
 
     # Fill in NaNs appropriately
     nan_names = df['locus_name'].isnull()
@@ -143,7 +146,7 @@ def read_files(directory_path, seed, pop_of_interest, refpop):
     return df
 
 
-def write_output(directory_path, seed, pop_of_interest, refpop, df):
+def write_output(directory_path, seed, pop_of_interest, pops_reference, df):
     """
     Write the merged output to a file
 
@@ -151,12 +154,12 @@ def write_output(directory_path, seed, pop_of_interest, refpop, df):
         directory_path (str): directory into which the file should be saved
         seed (int): the seed used to create the file type OR combination of metadata
         pop_of_interest (str): of the type pN where N is 1+
-        refpop (str): of the type pN where N is 1+
+        pops_reference (str/list of str): of the type pN where N is 1+
         df (Pandas DataFrame): the combined statistics for writing
 
     """
     seed = '' if seed is None else seed
-    file_name = '%s_%s_%s_allstats.txt' % (str(seed), pop_of_interest,refpop)
+    file_name = '%s_%s_allstats.txt' % (str(seed), pop_of_interest)
     file_path = os.path.join(directory_path, file_name)
     df.to_csv(file_path, sep='\t', index=False)
 
@@ -178,13 +181,12 @@ def merge_all_seeds_and_write(input_directory,
     pops_reference = [pops_reference] if isinstance(pops_reference, str) else pops_reference
     seeds = get_seeds(input_directory)
     for seed in seeds:
-        # for population in pops_of_interest:
-        for refpop in pops_reference:
-            df = read_files(input_directory, seed, pop_of_interest, refpop)
-            if df is None:
-                print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
-            else:
-                write_output(output_directory, seed, pop_of_interest, refpop, df)
+
+        df = read_files(input_directory, seed, pop_of_interest, pops_reference)
+        if df is None:
+            print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
+        else:
+            write_output(output_directory, seed, pop_of_interest, pops_reference, df)
 
 
 def merge_all_seeds_and_extract(input_directory,
@@ -210,17 +212,17 @@ def merge_all_seeds_and_extract(input_directory,
     seeds = get_seeds(input_directory)
     combined = []
     #for population in pops_of_interest:
-    for refpop in pops_reference:
-        for seed in seeds:
-            df = read_files(input_directory, seed, pop_of_interest, refpop)
-            if df is None:
-                print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
-            else:
-                combined.append(df.loc[df['pos'] == sweep_pos, :])
+    #for refpop in pops_reference:
+    for seed in seeds:
+        df = read_files(input_directory, seed, pop_of_interest, pops_reference)
+        if df is None:
+            print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
+        else:
+            combined.append(df.loc[df['pos'] == sweep_pos, :])
 
         if len(combined) > 0:
             df = pd.concat(combined, axis=0, ignore_index=True)
-            write_output(output_directory, additional_name_text, pop_of_interest, refpop, df)
+            write_output(output_directory, additional_name_text, pop_of_interest, pops_reference, df)
 
 
 def merge_seeds_over_stp(input_directory,
