@@ -80,7 +80,7 @@ def read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='Fst
     fst_path_alt = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, refpop, pop_of_interest))
     if not os.path.exists(fst_path) and not os.path.exists(fst_path_alt):
         return None
-    if os.path.exists(fstpath):
+    if os.path.exists(fst_path):
         df = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
                      names=['chrom', 'pos', key_column])
     else:
