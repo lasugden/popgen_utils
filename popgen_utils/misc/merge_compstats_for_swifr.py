@@ -159,7 +159,7 @@ def write_output(directory_path, seed, pop_of_interest, pops_reference, df):
 
     """
     seed = '' if seed is None else seed
-    file_name = '%s_%s_allstats.txt' % (str(seed), pop_of_interest)
+    file_name = '%s_%s_%s_allstats.txt' % (str(seed), pop_of_interest, ''.join(pops_reference))
     file_path = os.path.join(directory_path, file_name)
     df.to_csv(file_path, sep='\t', index=False)
 
