@@ -2,6 +2,7 @@ from datetime import datetime
 import os
 import os.path as opath
 import yaml
+import random
 try:
     import importlib.resources as ilresources
 except ImportError:
@@ -16,20 +17,22 @@ from popgen_utils.haplotype_simulation import slim_population_definitions
 
 
 def slim_definition_to_input(definition_name,
-                             selection_coefficient,
+                             selection_coefficient_min,
+                             selection_coefficient_max,
                              sweep_population,
                              sweep_time,
                              project_name,
                              model_name,
-                             data_path=None):
+                             data_path=None
+                             sims_per_sweeptime=1000):
     """
     Read in a slim definition file and replace with the correct values from
     input data.
 
     Args:
         definition_name (str): name of the definition file, e.g. gravel_model
-        selection_coefficient (float or list of floats): the selection
-            coefficients to model, e.g. [0.06,0.08,0.1,0.12]
+        selection_coefficient_min (float): the min selection
+            coefficients to model, e.g. 0.02
         sweep_population (str or list of str): the populations to compare,
             e.g. ['p1', 'p2', 'p3']
         sweep_time (int or list of ints): number of kiloyears of sweep starts,
@@ -40,29 +43,34 @@ def slim_definition_to_input(definition_name,
             e.g. 'san_3pop_sweep_simulation'
         data_path (str, optional): path into which the output will be saved.
             Defaults to the directory from config
+        sims_per_sweeptime (int, optional): number of simulations per population and
+            sweep time 
 
     """
     # Format the appropriate model file
     # noinspection PyTypeChecker
     txt = ilresources.open_text(slim_population_definitions, f'{definition_name}.txt').read()
 
-    # Make paths
+    # Make paths (e.g. datapath will be /users/la7/data/lalpert/data/)
     if data_path is None:
         data_path = config.params()['paths']['data']
 
     base_path = opath.join(data_path, project_name)
     if not opath.exists(base_path):
         os.mkdir(base_path)
-    slim_path = opath.join(base_path, 'slim')
+    slim_path = opath.join(base_path, 'slim') 
     if not opath.exists(slim_path):
         os.mkdir(slim_path)
     slim_model_path = opath.join(slim_path, model_name)
     if not opath.exists(slim_model_path):
         os.mkdir(slim_model_path)
 
+        
+    # Change this to draw selection coefficients at random from [selection_coefficient_min, selection_coefficient_max]
     # Make sure inputs are iterable
-    selection_coefficient = [selection_coefficient] if isinstance(selection_coefficient, float) \
-        else selection_coefficient
+    #selection_coefficient = [selection_coefficient] if isinstance(selection_coefficient, float) \
+       # else selection_coefficient
+    selection_coefficient = [round(random.uniform(selection_coefficient_min,selection_coefficient_max), 8) for x in range(sims_per_sweeptime)]
     sweep_population = [sweep_population] if isinstance(selection_coefficient, str) else sweep_population
     sweep_time = [sweep_time] if isinstance(sweep_time, int) else sweep_time
 
@@ -121,9 +129,10 @@ def run_slim(project_name, model_name):
 
 
 if __name__ == '__main__':
-    slim_definition_to_input('gravel_model',
-                             selection_coefficient=[0.06, 0.08],
+    slim_definition_to_input('gravel_model_100kb',
+                             selection_coefficient_min=0.02,
+                             selection_coefficient_max=0.12,
                              sweep_population=['p1', 'p2', 'p3'],
-                             sweep_time=[10],
-                             project_name='test_project_1',
-                             model_name='test_gravel_1')
+                             sweep_time=[5,10,15,20],
+                             project_name='sweep_hmm',
+                             model_name='gravel_100kb_uniform_scoeff')

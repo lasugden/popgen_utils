@@ -262,7 +262,6 @@ def merge_seeds_over_stp(input_directory,
     """
     selection_strength = [selection_strength] if not isinstance(selection_strength, list) else selection_strength
     time_of_sweep = [time_of_sweep] if not isinstance(time_of_sweep, list) else time_of_sweep
-    #pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
     pops_reference = [pops_reference] if isinstance(pops_reference,str) else pops_reference
 
     for sel in selection_strength:
