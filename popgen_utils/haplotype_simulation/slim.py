@@ -23,7 +23,7 @@ def slim_definition_to_input(definition_name,
                              sweep_time,
                              project_name,
                              model_name,
-                             data_path=None
+                             data_path=None,
                              sims_per_sweeptime=1000):
     """
     Read in a slim definition file and replace with the correct values from
