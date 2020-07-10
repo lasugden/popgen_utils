@@ -11,7 +11,7 @@ scripts = []
 
 setup(
     name="popgen_utils",
-    version="0.0.1",
+    version="0.0.2",
     author='Lauren Sugden & Arthur Sugden',
     packages=setuptools.find_packages(),
     install_requires=[
