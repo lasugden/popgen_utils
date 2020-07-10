@@ -11,12 +11,9 @@ scripts = []
 
 setup(
     name="popgen_utils",
-    version="0.0.1",
-    packages=['popgen_utils'],
-    #   scripts = [''],
-    #
-    # Project uses reStructuredText, so ensure that the docutils get
-    # installed or upgraded on the target machine
+    version="0.0.2",
+    author='Lauren Sugden & Arthur Sugden',
+    packages=setuptools.find_packages(),
     install_requires=[
         'numpy>=1.11',
         'scipy>=0.18.0',
@@ -36,7 +33,6 @@ setup(
     # },
     #
     # metadata for upload to PyPI
-    author="Lauren & Arthur Sugden",
     author_email="lauren.v.sugden@gmail.com",
     description="Sugden Lab population genetics analysis tools",
     license="GNU GPLv2",
@@ -44,6 +40,7 @@ setup(
     setup_requires=setup_requires,
     # setup_requires=['setuptools_cython'],
     platforms=["Linux", "Mac OS-X", "Windows"],
+    include_package_data=True,
     #
     # could also include long_description, download_url, etc.
 )
