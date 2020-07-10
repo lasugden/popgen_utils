@@ -40,6 +40,7 @@ setup(
     setup_requires=setup_requires,
     # setup_requires=['setuptools_cython'],
     platforms=["Linux", "Mac OS-X", "Windows"],
+    include_package_data=True,
     #
     # could also include long_description, download_url, etc.
 )

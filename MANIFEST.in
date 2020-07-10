@@ -1,0 +1,3 @@
+include README.md
+include popgen_utils/*.default
+include popgen_utils/haplotype_simulation/slim_population_definitions/*.txt
