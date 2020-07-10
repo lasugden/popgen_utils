@@ -95,7 +95,7 @@ def slim_definition_to_input(definition_name,
                 sweep_start_generation = 58000 - int(time*1000.0/25)
 
                 parameter_model_name = (f'{model_name}_coeff-{coeff}_'
-                                        f'pop-{pop}_start-{sweep_start_generation}')
+                                        f'pop-{pop}_start-{time}')
 
                 # Format the text appropriately
                 formatted_txt = txt.format(**{
