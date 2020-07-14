@@ -135,4 +135,4 @@ if __name__ == '__main__':
                              sweep_population=['p1', 'p2', 'p3'],
                              sweep_time=[5,10,15,20],
                              project_name='sweep_hmm',
-                             model_name='gravel_100kb_uniform_scoeff')
+                             model_name='gravel_sweep_100kb_uniform_scoeff')
