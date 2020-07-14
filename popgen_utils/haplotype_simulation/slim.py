@@ -112,7 +112,7 @@ def slim_definition_to_input(definition_name,
                 fp.close()
 
 
-def run_slim(project_name, model_name):
+def run_slim(project_name, model_name, data_path=None):
     """
     Run the slim binary. Use the same names as those used for definition
     creation.
