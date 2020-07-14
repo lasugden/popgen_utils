@@ -14,6 +14,7 @@ except ImportError:
 from popgen_utils import config
 from popgen_utils.misc import hashing
 from popgen_utils.haplotype_simulation import slim_population_definitions
+from popgen_utils.haplotype_simulation import oscar_scripts
 
 
 def slim_definition_to_input(definition_name,
@@ -125,7 +126,42 @@ def run_slim(project_name, model_name):
     Returns:
 
     """
+    txt = ilresources.open_text(oscar_scripts, 'run_slim.txt').read()
 
+
+
+    # Make paths (e.g. datapath will be /users/la7/data/lalpert/data/)
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+
+    base_path = opath.join(data_path, project_name)
+    if not opath.exists(base_path):
+        os.mkdir(base_path)
+    slim_path = opath.join(base_path, 'slim') 
+    if not opath.exists(slim_path):
+        os.mkdir(slim_path)
+    slim_model_path = opath.join(slim_path, model_name)
+    if not opath.exists(slim_model_path):
+        os.mkdir(slim_model_path)
+    
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    params = yaml.load(yaml_file)
+    scoeffs = params['selection_coefficient']
+    times = params['sweep_time']
+    pops_of_interest = params['sweep_population']
+
+    for pop in pops_of_interest:
+        for time in times:
+            for coeff in scoeffs:
+                parameter_model_name = (f'{model_name}_coeff-{coeff}_pop-{pop}_start-{time}')
+                formatted_txt = txt.format(**{
+                    'slim_file': opath.join(slim_model_path,f'{parameter_model_name}.slim'),
+                    'parameter_model_name': parameter_model_name,
+                })
+                fp = open(opath.join(slim_model_path, f'{parameter_model_name}.sh'), 'w')
+                fp.write(formatted_txt)
+                fp.close()
+                os.system('sbatch '+opath.join(slim_model_path,f'{parameter_model_name}.sh'))
 
 
 if __name__ == '__main__':
@@ -136,3 +172,6 @@ if __name__ == '__main__':
                              sweep_time=[5,10,15,20],
                              project_name='sweep_hmm',
                              model_name='gravel_sweep_100kb_uniform_scoeff')
+
+    run_slim(project_name='sweep_hmm',
+             model_name='gravel_sweep_100kb_uniform_scoeff')
