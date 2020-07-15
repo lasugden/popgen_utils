@@ -154,8 +154,7 @@ def run_slim(project_name, model_name, data_path=None):
         for time in times:
             for coeff in scoeffs:
                 parameter_model_name = (f'{model_name}_coeff-{coeff}_pop-{pop}_start-{time}')
-                if not os.path.isfile(opath.join(slim_model_path, f'{parameter_model_name}.vcf')) or not
-                    os.path.isfile(opath.join(slim_model_path, f'{parameter_model_name}_ms.txt')):
+                if not os.path.isfile(opath.join(slim_model_path, f'{parameter_model_name}.vcf')) or not os.path.isfile(opath.join(slim_model_path, f'{parameter_model_name}_ms.txt')):
 
                     formatted_txt = txt.format(**{
                         'slim_file': opath.join(slim_model_path,f'{parameter_model_name}.slim'),
