@@ -123,7 +123,7 @@ def slim_out_to_selscan(project_name, model_name, type, data_path=None):
         sims = params['sims']
         for sim in range(int(sims)):
             parameter_model_name = (f'{model_name}_sim-{sim}')
-            filename = opath.join(slim_model_path,f'{oarameter_model_name}')
+            filename = opath.join(slim_model_path,f'{parameter_model_name}')
             if not opath.isfile(filename+'_p3.hap'):
                 ms_to_mapfile_hapfile(filename,num_individuals)
 
