@@ -54,7 +54,7 @@ def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
     out.write(outtext.strip())
     out.close()
 
-    for pop in range(num_individuals):
+    for pop in range(len(num_individuals)):
         popname = 'p'+str(pop+1)
         out = open(filename+'_'+popname+'.hap','w')
         outtext = ''
