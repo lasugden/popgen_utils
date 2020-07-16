@@ -49,9 +49,9 @@ def run_ihs(project_name, model_name, type, data_path=None):
                                             f'pop-{pop}_start-{time}')
                         formatted_txt = txt.format(**{
                             'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
-                            'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt')
+                            'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt'),
                             'out_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}'),
-                            'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}')
+                            'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}'),
                             })
                         fp = open(opath.join(bash_path,f'{parameter_model_name}_{pop}.sh'),'w')
                         fp.write(formatted_txt)
@@ -66,9 +66,9 @@ def run_ihs(project_name, model_name, type, data_path=None):
                     parameter_model_name = (f'{model_name}_sim-{sim}')
                     formatted_txt = txt.format(**{
                         'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
-                        'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt')
+                        'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt'),
                         'out_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}'),
-                        'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}')
+                        'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}'),
                         })
                     fp = open(opath.join(bash_path,f'{parameter_model_name}_{pop}.sh'),'w')
                     fp.write(formatted_txt)
@@ -108,10 +108,10 @@ def run_xpehh(project_name, model_name, type, data_path=None):
                                                 f'pop-{pop}_start-{time}')
                             formatted_txt = txt.format(**{
                                 'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
-                                'ref_file' : opath.join(slim_model_path,f'{parameter_model_name}_{refpop}.hap')
-                                'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt')
+                                'ref_file' : opath.join(slim_model_path,f'{parameter_model_name}_{refpop}.hap'),
+                                'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt'),
                                 'out_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}'),
-                                'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}')
+                                'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}'),
                                 })
                             fp = open(opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}.sh'),'w')
                             fp.write(formatted_txt)
@@ -128,10 +128,10 @@ def run_xpehh(project_name, model_name, type, data_path=None):
                             parameter_model_name = (f'{model_name}_sim-{sim}')
                             formatted_txt = txt.format(**{
                                 'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
-                                'ref_file' : opath.join(slim_model_path,f'{parameter_model_name}_{refpop}.hap')
-                                'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt')
+                                'ref_file' : opath.join(slim_model_path,f'{parameter_model_name}_{refpop}.hap'),
+                                'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt'),
                                 'out_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}'),
-                                'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}')
+                                'log_file' : opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}'),
                                 })
                             fp = open(opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}.sh'),'w')
                             fp.write(formatted_txt)
