@@ -11,7 +11,7 @@ initialize() {{
 1 {{
 	defineConstant("simID", getSeed());
 	sim.addSubpop("p1", 7310);
-	defineConstant("fit", 1.0 + 0.5*{selection_coefficient});
+
 }}
 
 // Expand the African population to 14474
