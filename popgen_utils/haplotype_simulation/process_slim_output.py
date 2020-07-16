@@ -29,8 +29,8 @@ def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
     start = 3
     pop_haplotypes = []
     for pop in range(num_individuals):
-    	pop_haplotypes.append(f[start:start+num_individuals[pop]*2])
-    	start = start+num_individuals[pop]*2
+        pop_haplotypes.append(f[start:start+num_individuals[pop]*2])
+        start = start+num_individuals[pop]*2
 
     #p1ind = f[3:3+p1size*2]
     #p2ind = f[3+p1size*2:3+p1size*2+p2size*2]
@@ -55,13 +55,13 @@ def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
     out.close()
 
     for pop in range(num_individuals):
-    	popname = 'p'+str(pop+1)
-    	out = open(filename+'_'+popname+'.hap','w')
-    	outtext = ''
-    	for line in pop_haplotypes[pop]:
-    		outtext += " ".join(line)+'\n'
-    	out.write(outtext.strip())
-    	out.close()
+        popname = 'p'+str(pop+1)
+        out = open(filename+'_'+popname+'.hap','w')
+        outtext = ''
+        for line in pop_haplotypes[pop]:
+            outtext += " ".join(line)+'\n'
+        out.write(outtext.strip())
+        out.close()
 
 
     # out = open(os.path.join(path,str(seed)+'_p1.hap'),'w')
@@ -88,42 +88,42 @@ def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
 
 def slim_out_to_selscan(project_name, model_name, type, data_path=None):
 
-	#number of individuals for each population -- match slim input files, made to match 1000G phase1 samples.
-	#the number of haplotypes will be 2x the number of individuals
-	#p1indiv = 108
-	#p2indiv = 99
-	#p3indiv = 103
+    #number of individuals for each population -- match slim input files, made to match 1000G phase1 samples.
+    #the number of haplotypes will be 2x the number of individuals
+    #p1indiv = 108
+    #p2indiv = 99
+    #p3indiv = 103
 
-	#numpops = 3
-	num_individuals = [108, 99, 103]
+    #numpops = 3
+    num_individuals = [108, 99, 103]
 
     if data_path is None:
         data_path = config.params()['paths']['data']
-	base_path = opath.join(data_path, project_name)
-	slim_path = opath.join(base_path, 'slim')
-	slim_model_path = opath.join(slim_path, model_name)
+    base_path = opath.join(data_path, project_name)
+    slim_path = opath.join(base_path, 'slim')
+    slim_model_path = opath.join(slim_path, model_name)
 
-	yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
     params = yaml.load(yaml_file)
 
     if type == 'sweep':
-    	scoeffs = params['selection_coefficient']
-    	times = params['sweep_time']
-    	pops_of_interest = params['sweep_population']
-    	for coeff in scoeffs:
-    		for time in times:
-    			for pop in pops_of_interest:
-    				parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+        scoeffs = params['selection_coefficient']
+        times = params['sweep_time']
+        pops_of_interest = params['sweep_population']
+        for coeff in scoeffs:
+            for time in times:
+                for pop in pops_of_interest:
+                    parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                         f'pop-{pop}_start-{time}')
-    				filename = opath.join(slim_model_path, f'{parameter_model_name}')
-    				ms_to_mapfile_hapfile(filename,num_individuals)
+                    filename = opath.join(slim_model_path, f'{parameter_model_name}')
+                    ms_to_mapfile_hapfile(filename,num_individuals)
 
     if type == 'neutral':
-    	sims = params['sims']
-    	for sim in range(sims):
-    		parameter_model_name = (f'{model_name}_sim-{sim}')
-    		filename = opath.join(slim_model_path,f'{oarameter_model_name}')
-    		ms_to_mapfile_hapfile(filename,num_individuals)
+        sims = params['sims']
+        for sim in range(sims):
+            parameter_model_name = (f'{model_name}_sim-{sim}')
+            filename = opath.join(slim_model_path,f'{oarameter_model_name}')
+            ms_to_mapfile_hapfile(filename,num_individuals)
 
 
 
