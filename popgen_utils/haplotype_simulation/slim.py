@@ -34,7 +34,7 @@ def slim_definition_to_input_neutral(definition_name,
             e.g. 'gravel_neutral'
     """
 
-   txt = ilresources.open_text(slim_population_definitions, f'{definition_name}.txt').read()
+    txt = ilresources.open_text(slim_population_definitions, f'{definition_name}.txt').read()
 
     # Make paths (e.g. datapath will be /users/la7/data/lalpert/data/)
     if data_path is None:
