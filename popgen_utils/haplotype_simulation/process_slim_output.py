@@ -116,14 +116,16 @@ def slim_out_to_selscan(project_name, model_name, type, data_path=None):
                     parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                         f'pop-{pop}_start-{time}')
                     filename = opath.join(slim_model_path, f'{parameter_model_name}')
-                    ms_to_mapfile_hapfile(filename,num_individuals)
+                    if not opath.isfile(filename+'_p3.hap'):
+                        ms_to_mapfile_hapfile(filename,num_individuals)
 
     if type == 'neutral':
         sims = params['sims']
-        for sim in range(sims):
+        for sim in range(int(sims)):
             parameter_model_name = (f'{model_name}_sim-{sim}')
             filename = opath.join(slim_model_path,f'{oarameter_model_name}')
-            ms_to_mapfile_hapfile(filename,num_individuals)
+            if not opath.isfile(filename+'_p3.hap'):
+                ms_to_mapfile_hapfile(filename,num_individuals)
 
 
 
