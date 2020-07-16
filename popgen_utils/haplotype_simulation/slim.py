@@ -17,6 +17,62 @@ from popgen_utils.haplotype_simulation import slim_population_definitions
 from popgen_utils.haplotype_simulation import oscar_scripts
 
 
+def slim_definition_to_input_neutral(definition_name,
+                                     project_name,
+                                     model_name,
+                                     sims=1000,
+                                     data_path=None):
+
+    """
+    Read in slim definition file and replace with neutral counts
+
+    Args:
+        definition_name (str): name of the definition file, e.g. gravel_model
+        project_name (str): name of the project directory into which data was
+            saved, e.g. 'sweep_hmm'
+        model_name (str):the name of the particular model,
+            e.g. 'gravel_neutral'
+    """
+
+   txt = ilresources.open_text(slim_population_definitions, f'{definition_name}.txt').read()
+
+    # Make paths (e.g. datapath will be /users/la7/data/lalpert/data/)
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+
+    base_path = opath.join(data_path, project_name)
+    if not opath.exists(base_path):
+        os.mkdir(base_path)
+    slim_path = opath.join(base_path, 'slim') 
+    if not opath.exists(slim_path):
+        os.mkdir(slim_path)
+    slim_model_path = opath.join(slim_path, model_name)
+    if not opath.exists(slim_model_path):
+        os.mkdir(slim_model_path)
+
+    # Save the metadata
+    with open(opath.join(slim_path, f'{model_name}.yaml'), 'wb') as fp:
+        yaml.dump({
+            'date': datetime.now().strftime('%y%m%d'),
+            'definition_name': definition_name,
+            'project_name': project_name,
+            'model_name': model_name,
+            'sims':str(sims),
+            'template_hash': hashing.hash(txt),
+        }, fp, encoding='utf-8')
+
+    for sim in range(int(sims)):
+        parameter_model_name = (f'{model_name}_sim-{sim}')
+        formatted_txt = txt.format(**{
+            'vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}.vcf'),
+            'ms_file_output': opath.join(slim_model_path, f'{parameter_model_name}_ms.txt'),
+        })
+
+        fp = open(opath.join(slim_model_path, f'{parameter_model_name}.slim'), 'w')
+        fp.write(formatted_txt)
+        fp.close()
+
+
 def slim_definition_to_input(definition_name,
                              selection_coefficient_min,
                              selection_coefficient_max,
@@ -39,9 +95,9 @@ def slim_definition_to_input(definition_name,
         sweep_time (int or list of ints): number of kiloyears of sweep starts,
             e.g. [5, 10, 15, 20]
         project_name (str): name of the project directory into which data will
-            be saved, e.g. 'name_of_demographic_model_with_30000_yrs_selection'
+            be saved, e.g. 'sweep_hmm'
         model_name (str): the name of the particular model,
-            e.g. 'san_3pop_sweep_simulation'
+            e.g. 'gravel_sweep'
         data_path (str, optional): path into which the output will be saved.
             Defaults to the directory from config
         sims_per_sweeptime (int, optional): number of simulations per population and
@@ -112,6 +168,52 @@ def slim_definition_to_input(definition_name,
                 fp.close()
 
 
+def run_slim_neutral(definition_name, project_name, model_name, data_path=None):
+    """
+    Run the slim binary multiple times for neutral simulations
+
+    Args:
+        definition_name (str): name of the definition file, e.g. gravel_model
+        project_name (str): name of the project directory into which data was
+            saved, e.g. 'sweep_hmm'
+        model_name (str):the name of the particular model,
+            e.g. 'gravel_neutral'
+    """
+ 
+
+    txt = ilresources.open_text(oscar_scripts, 'run_slim.txt').read()
+
+    # Make paths (e.g. datapath will be /users/la7/data/lalpert/data/)
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+
+    base_path = opath.join(data_path, project_name)
+    if not opath.exists(base_path):
+        os.mkdir(base_path)
+    slim_path = opath.join(base_path, 'slim') 
+    if not opath.exists(slim_path):
+        os.mkdir(slim_path)
+    slim_model_path = opath.join(slim_path, model_name)
+    if not opath.exists(slim_model_path):
+        os.mkdir(slim_model_path)
+
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    params = yaml.load(yaml_file)
+    sims = params['sims']
+
+    for sim in range(int(sims)):
+        parameter_model_name = (f'{model_name}_sim-{sim}')
+        formatted_txt = txt.format(**{
+                        'slim_file':opath.join(slim_model_path,f'{parameter_model_name}.slim'),
+                        'parameter_model_name': parameter_model_name,
+        })
+        fp = open(opath.join(slim_model_path, f'{parameter_model_name}.sh'), 'w')
+        fp.write(formatted_txt)
+        fp.close()
+        os.system('sbatch '+opath.join(slim_model_path,f'{parameter_model_name}.sh'))
+
+
+
 def run_slim(project_name, model_name, data_path=None):
     """
     Run the slim binary. Use the same names as those used for definition
@@ -119,9 +221,9 @@ def run_slim(project_name, model_name, data_path=None):
 
     Args:
         project_name (str): name of the project directory into which data was
-            saved, e.g. 'name_of_demographic_model_with_30000_yrs_selection'
+            saved, e.g. 'sweep_hmm'
         model_name (str): the name of the particular model,
-            e.g. 'san_3pop_sweep_simulation'
+            e.g. 'gravel_sweep'
 
     Returns:
 
