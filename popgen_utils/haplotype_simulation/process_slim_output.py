@@ -26,7 +26,7 @@ def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
     sites = f[2].strip().split()[1:]
     sites = [float(x) for x in sites]
 
-	start = 3
+    start = 3
     pop_haplotypes = []
     for pop in range(num_individuals):
     	pop_haplotypes.append(f[start:start+num_individuals[pop]*2])
