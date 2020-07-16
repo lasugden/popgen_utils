@@ -2,3 +2,4 @@ include README.md
 include popgen_utils/*.default
 include popgen_utils/haplotype_simulation/slim_population_definitions/*.txt
 include popgen_utils/haplotype_simulation/oscar_scripts/*.txt
+include popgen_utils/snp_statistics/oscar_scripts/*.txt

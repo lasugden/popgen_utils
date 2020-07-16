@@ -32,9 +32,6 @@ def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
         pop_haplotypes.append(f[start:start+num_individuals[pop]*2])
         start = start+num_individuals[pop]*2
 
-    #p1ind = f[3:3+p1size*2]
-    #p2ind = f[3+p1size*2:3+p1size*2+p2size*2]
-    #p3ind = f[3+p1size*2+p2size*2:]
     out = open(filename+'_map.txt','w')
     SNPnum = 1
     outtext = ''
@@ -64,27 +61,6 @@ def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
         out.close()
 
 
-    # out = open(os.path.join(path,str(seed)+'_p1.hap'),'w')
-    # outtext = ''
-    # for line in p1ind:
-    #     outtext += " ".join(line)+'\n'
-    # out.write(outtext.strip())
-    # out.close()
-
-    # out = open(os.path.join(path,str(seed)+'_p2.hap'),'w')
-    # outtext = ''
-    # for line in p2ind:
-    #     outtext += " ".join(line)+'\n'
-    # out.write(outtext.strip())
-    # out.close()
-
-    # out = open(os.path.join(path,str(seed)+'_p3.hap'),'w')
-    # outtext = ''
-    # for line in p3ind:
-    #     outtext += " ".join(line)+'\n'
-    # out.write(outtext.strip())
-    # out.close()
-
 
 def slim_out_to_selscan(project_name, model_name, type, data_path=None):
 
@@ -94,7 +70,6 @@ def slim_out_to_selscan(project_name, model_name, type, data_path=None):
     #p2indiv = 99
     #p3indiv = 103
 
-    #numpops = 3
     num_individuals = [108, 99, 103]
 
     if data_path is None:
