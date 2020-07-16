@@ -44,9 +44,10 @@ def run_ihs(project_name, model_name, type, data_path=None):
         for coeff in scoeffs:
             for time in times:
                 for pop in pops_of_interest:
-                    if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')):
-                        parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                    parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                             f'pop-{pop}_start-{time}')
+                    if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')):
+
                         formatted_txt = txt.format(**{
                             'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
                             'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt'),
@@ -62,8 +63,8 @@ def run_ihs(project_name, model_name, type, data_path=None):
         sims = params['sims']
         for sim in range(int(sims)):
             for pop in pops:
+                parameter_model_name = (f'{model_name}_sim-{sim}')
                 if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')):
-                    parameter_model_name = (f'{model_name}_sim-{sim}')
                     formatted_txt = txt.format(**{
                         'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
                         'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt'),
@@ -103,9 +104,10 @@ def run_xpehh(project_name, model_name, type, data_path=None):
             for time in times:
                 for pop in pops_of_interest:
                     for refpop in [x for x in pops if x!= pop]:
-                        if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out')):
-                            parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                        parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                                 f'pop-{pop}_start-{time}')
+                        if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out')):
+
                             formatted_txt = txt.format(**{
                                 'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
                                 'ref_file' : opath.join(slim_model_path,f'{parameter_model_name}_{refpop}.hap'),
@@ -124,8 +126,9 @@ def run_xpehh(project_name, model_name, type, data_path=None):
             for pop in pops:
                 for refpop in pops:
                     if pops.index(refpop) > pops.index(pop): #only run p1p2 e.g., not p2p1
+                        parameter_model_name = (f'{model_name}_sim-{sim}')
                         if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out')):
-                            parameter_model_name = (f'{model_name}_sim-{sim}')
+
                             formatted_txt = txt.format(**{
                                 'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
                                 'ref_file' : opath.join(slim_model_path,f'{parameter_model_name}_{refpop}.hap'),
