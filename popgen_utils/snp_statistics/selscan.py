@@ -19,6 +19,7 @@ from popgen_utils.misc import hashing
 
 from popgen_utils.snp_statistics import oscar_scripts
 
+
 def run_ihs(project_name, model_name, type, data_path=None):
 
     pops = ['p1','p2','p3']
