@@ -3,7 +3,7 @@ initialize() {{
 	initializeMutationType("m1", 0.5, "f", 0.0);
 	initializeMutationType("m2", 0.5, "f", 0.0);
 	initializeGenomicElementType("g1", m1, 1.0);
-	initializeGenomicElement(g1, 0, 100000);
+	initializeGenomicElement(g1, 0, 400000);
 	initializeRecombinationRate(1e-8);
 }}
 
@@ -64,4 +64,5 @@ initialize() {{
 	p1Individuals.genomes.outputVCF("{p1_vcf_file_output}");
 	p2Individuals.genomes.outputVCF("{p2_vcf_file_output}");
 	p3Individuals.genomes.outputVCF("{p3_vcf_file_output}");
+
 }}

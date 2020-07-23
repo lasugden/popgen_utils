@@ -3,7 +3,7 @@ initialize() {{
 	initializeMutationType("m1", 0.5, "f", 0.0);
 	initializeMutationType("m2", 0.5, "f", 0.0);
 	initializeGenomicElementType("g1", m1, 1.0);
-	initializeGenomicElement(g1, 0, 100000);
+	initializeGenomicElement(g1, 0, 400000);
 	initializeRecombinationRate(1e-8);
 }}
 
@@ -11,7 +11,7 @@ initialize() {{
 1 {{
 	defineConstant("simID", getSeed());
 	sim.addSubpop("p1", 7310);
-
+	defineConstant("fit", 1.0 + 0.5*{selection_coefficient});
 }}
 
 // Expand the African population to 14474
@@ -49,6 +49,46 @@ initialize() {{
 	p3.setSubpopulationSize(asInteger(p3_size));
 }}
 
+{sweep_start_generation} late(){{
+	//save the state of the simulation
+	sim.outputFull("tmp_slim_"+simID+".txt");
+	//introduce the sweep mutation
+	target = sample({sweep_population}.genomes, 1);
+	target.addNewDrawnMutation(m2, 200000);
+}}
+
+//change selection coefficient ({selection_coefficient}) for pop of interest ({sweep_population})
+{sweep_start_generation}:58000 fitness(m2, {sweep_population})
+{{
+	return fit;
+}}
+
+{sweep_start_generation}:58000 late()
+{{
+	mut = sim.mutationsOfType(m2);
+	if (size(mut)==1)
+	{{
+		if (sim.mutationFrequencies(NULL, mut) > 0.2)
+		{{
+			cat(simID+": ESTABLISHED\n");
+			sim.deregisterScriptBlock(self);
+		}}
+	}}
+
+	else
+	{{
+		cat(simID+": LOST -- RESTARTING\n");
+		//go back to generation sweep_start_generation
+		sim.readFromPopulationFile("tmp_slim_"+simID+".txt");
+		//start a newly seeded run
+		setSeed(rdunif(1, 0, asInteger(2^32)-1));
+		//reintroduce sweep mutation
+		target = sample({sweep_population}.genomes, 1);
+		target.addNewDrawnMutation(m2, 200000);
+	}}
+
+
+}}
 
 // Generation 58000 is the present. Output and terminate.
 58000 late() {{

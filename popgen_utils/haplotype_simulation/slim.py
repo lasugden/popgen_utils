@@ -66,6 +66,9 @@ def slim_definition_to_input_neutral(definition_name,
         formatted_txt = txt.format(**{
             'vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}.vcf'),
             'ms_file_output': opath.join(slim_model_path, f'{parameter_model_name}_ms.txt'),
+            'p1_vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}_p1.vcf'),
+            'p2_vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}_p2.vcf'),
+            'p3_vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}_p3.vcf'),
         })
 
         fp = open(opath.join(slim_model_path, f'{parameter_model_name}.slim'), 'w')
@@ -161,6 +164,9 @@ def slim_definition_to_input(definition_name,
                     'sweep_start_generation': sweep_start_generation,
                     'vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}.vcf'),
                     'ms_file_output': opath.join(slim_model_path, f'{parameter_model_name}_ms.txt'),
+                    'p1_vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}_p1.vcf'),
+                    'p2_vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}_p2.vcf'),
+                    'p3_vcf_file_output': opath.join(slim_model_path, f'{parameter_model_name}_p3.vcf'),
                 })
 
                 fp = open(opath.join(slim_model_path, f'{parameter_model_name}.slim'), 'w')
