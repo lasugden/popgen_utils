@@ -209,6 +209,7 @@ def run_slim_neutral(definition_name, project_name, model_name, data_path=None):
 
     for sim in range(int(sims)):
         parameter_model_name = (f'{model_name}_sim-{sim}')
+        if not opath.isfile(opath.join(slim_model_path, f'{parameter_model_name}.vcf')) or not opath.isfile(opath.join(slim_model_path, f'{parameter_model_name}_ms.txt')):
         formatted_txt = txt.format(**{
                         'slim_file':opath.join(slim_model_path,f'{parameter_model_name}.slim'),
                         'parameter_model_name': parameter_model_name,
