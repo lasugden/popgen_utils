@@ -4,4 +4,4 @@
 #SBATCH --mem=5G
 #SBATCH -o {log_file}.out
 
-/users/la7/data/lalpert/Selective_Adaptation/code/selscan_v1.1.0w/src/selscan --ihs --hap {hap_file} --map {map_file} --out {out_file}
+/users/la7/data/lalpert/Selective_Adaptation/code/selscan_v1.1.0w/src/selscan --ihs --hap {hap_file} --map {map_file} --out {out_file} --keep-low-freq
