@@ -47,7 +47,7 @@ def run_ihs(project_name, model_name, type, data_path=None):
                 for pop in pops_of_interest:
                     parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                             f'pop-{pop}_start-{time}')
-                    if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')):
+                    if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')) or os.path.getsize(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out'))<2:
 
                         formatted_txt = txt.format(**{
                             'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
