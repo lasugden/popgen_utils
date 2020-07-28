@@ -62,7 +62,7 @@ def ms_to_mapfile_hapfile(filename, num_individuals, sim_length, data_path=None)
 
 
 
-def slim_out_to_selscan(project_name, model_name, type, data_path=None):
+def slim_out_to_selscan(project_name, model_name, type, sim_length, data_path=None):
 
     #number of individuals for each population -- match slim input files, made to match 1000G phase1 samples.
     #the number of haplotypes will be 2x the number of individuals
@@ -92,7 +92,7 @@ def slim_out_to_selscan(project_name, model_name, type, data_path=None):
                                         f'pop-{pop}_start-{time}')
                     filename = opath.join(slim_model_path, f'{parameter_model_name}')
                     if not opath.isfile(filename+'_p3.hap'):
-                        ms_to_mapfile_hapfile(filename,num_individuals)
+                        ms_to_mapfile_hapfile(filename,num_individuals,sim_length)
 
     if type == 'neutral':
         sims = params['sims']
@@ -100,7 +100,7 @@ def slim_out_to_selscan(project_name, model_name, type, data_path=None):
             parameter_model_name = (f'{model_name}_sim-{sim}')
             filename = opath.join(slim_model_path,f'{parameter_model_name}')
             if not opath.isfile(filename+'_p3.hap'):
-                ms_to_mapfile_hapfile(filename,num_individuals)
+                ms_to_mapfile_hapfile(filename,num_individuals,sim_length)
 
 
 
