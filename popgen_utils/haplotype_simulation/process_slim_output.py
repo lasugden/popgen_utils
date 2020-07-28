@@ -24,7 +24,7 @@ def ms_to_mapfile_hapfile(filename, num_individuals, sim_length, data_path=None)
     file.close()
     f = f.strip().splitlines()
     sites = f[2].strip().split()[1:]
-    sites = [float(x)*sim_length/1e6 for x in sites] #re-scale from (0,1) to (0,frac of million sites)
+    sites = [float(x)*int(sim_length)/1e6 for x in sites] #re-scale from (0,1) to (0,frac of million sites)
 
     start = 3
     pop_haplotypes = []
