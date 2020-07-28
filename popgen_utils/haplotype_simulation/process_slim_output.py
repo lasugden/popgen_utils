@@ -18,13 +18,13 @@ from popgen_utils.haplotype_simulation import oscar_scripts
 
 
 
-def ms_to_mapfile_hapfile(filename, num_individuals, data_path=None):
+def ms_to_mapfile_hapfile(filename, num_individuals, sim_length, data_path=None):
     file = open(filename+'_ms.txt','r')
     f = file.read()
     file.close()
     f = f.strip().splitlines()
     sites = f[2].strip().split()[1:]
-    sites = [float(x) for x in sites]
+    sites = [float(x)*sim_length/1e6 for x in sites] #re-scale from (0,1) to (0,frac of million sites)
 
     start = 3
     pop_haplotypes = []
