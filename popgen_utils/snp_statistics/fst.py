@@ -20,7 +20,7 @@ from popgen_utils.misc import hashing
 from popgen_utils.snp_statistics import oscar_scripts
 
 def run_fst(project_name, model_name, type, data_path=None):
-	pops = ['p1','p2','p3']
+    pops = ['p1','p2','p3']
 
     if data_path is None:
         data_path = config.params()['paths']['data']
@@ -37,7 +37,7 @@ def run_fst(project_name, model_name, type, data_path=None):
     txt = ilresources.open_text(oscar_scripts, 'run_fst.txt').read()
 
 
-	if type == 'sweep':
+    if type == 'sweep':
         scoeffs = params['selection_coefficient']
         times = params['sweep_time']
         pops_of_interest = params['sweep_population']
