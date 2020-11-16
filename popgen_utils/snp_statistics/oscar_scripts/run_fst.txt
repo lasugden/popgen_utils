@@ -5,4 +5,4 @@
 #SBATCH -o {log_file}.out
 module load vcftools
 
-vcftools --vcf {vcf_filename} --weir-fst-pop {pop1} --weir-fst-pop {pop2} --out {outfile}
+vcftools --vcf {vcf_filename} --weir-fst-pop {pop1} --weir-fst-pop {pop2} --out {out_file}
