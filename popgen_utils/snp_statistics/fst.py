@@ -54,6 +54,7 @@ def run_fst(project_name, model_name, type, data_path=None):
                                 'pop1' : opath.join(slim_path,f'simulated_{pop}_individuals.txt'),
                                 'pop2' : opath.join(slim_path,f'simulated_{refpop}_individuals.txt'),
                                 'out_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}'),
+                                'log_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}'),
                                 })
                            
                             fp = open(opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}_fst.sh'),'w')
@@ -75,6 +76,7 @@ def run_fst(project_name, model_name, type, data_path=None):
                                 'pop1' : opath.join(slim_path,f'simulated_{pop}_individuals.txt'),
                                 'pop2' : opath.join(slim_path,f'simulated_{refpop}_individuals.txt'),
                                 'out_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}'),
+                                'log_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}'),
                                 })
                             fp = open(opath.join(bash_path,f'{parameter_model_name}_{pop}_{refpop}_fst.sh'),'w')
                             fp.write(formatted_txt)
