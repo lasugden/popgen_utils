@@ -5,4 +5,4 @@
 #SBATCH -o {log_file}.out
 
 module load selscan
-norm --ihs --files {sweep_file} {neutral_file_list} --first 
+norm --ihs --files {sweep_file} {neutral_file_list} --first --log {log_file}
