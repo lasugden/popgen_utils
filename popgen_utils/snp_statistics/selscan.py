@@ -55,7 +55,7 @@ def normalize_ihs(project_name, model_name_neutral, model_name_sweep, data_path=
             neutral_files = neutral_files+' '+filename
             formatted_txt = txt_neutral.format(**{
                 'file_list' : neutral_files,
-                'log_file' : 'ihs_norm_neutral_'+pop
+                'log_file' : opath.join(bash_path_neutral,'ihs_norm_neutral_'+pop)
                 })
         fp = open(opath.join(bash_path_neutral,'normalize_ihs_neutral_'+pop+'.sh'),'w')
         fp.write(formatted_txt)
@@ -75,7 +75,7 @@ def normalize_ihs(project_name, model_name_neutral, model_name_sweep, data_path=
                     formatted_txt = txt_sweep.format(**{
                         'sweep_file' : filename,
                         'neutral_file_list' : neutral_files,
-                        'log_file' : 'ihs_norm_sweep_'+parameter_model_name
+                        'log_file' : opath.join(bash_path_sweep,'ihs_norm_sweep_'+parameter_model_name),
                         })
                     fp = open(opath.join(bash_path_sweep,'normalize_ihs_sweep_'+parameter_model_name+'.sh'),'w')
                     fp.write(formatted_txt)
