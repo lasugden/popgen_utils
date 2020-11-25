@@ -1,9 +1,30 @@
+import multiprocessing as mp
+import subprocess
+
+from datetime import datetime
+import os
+import os.path as opath
+import yaml
+import random
+try:
+    import importlib.resources as ilresources
+except ImportError:
+    try:
+        import importlib_resources as ilresources
+    except ImportError:
+        raise ImportError('Must install backport of importlib_resources if not using Python >= 3.7')
+
+from popgen_utils import config
+from popgen_utils.misc import hashing
+
+from popgen_utils.snp_statistics import oscar_scripts
+
 import argparse
 import pandas as pd
-import os
 
 
-def read_file_ihs(directory_path, seed, pop_of_interest, refpop=None, key_column='iHS'):
+
+def read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=None, key_column='iHS'):
     """Read ihs files
 
     Args:
@@ -13,7 +34,7 @@ def read_file_ihs(directory_path, seed, pop_of_interest, refpop=None, key_column
         refpop (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    ihs_path = os.path.join(directory_path, '%i_%s.ihs.out.100bins.norm' % (seed, pop_of_interest))
+    ihs_path = os.path.join(directory_path, parameter_model_name+'_%s.ihs.out.100bins.norm' % (pop_of_interest))
     if not os.path.exists(ihs_path):
         return None
     df = pd.read_csv(ihs_path, skiprows=0, header=None, delim_whitespace=True, usecols=range(7),
@@ -21,7 +42,7 @@ def read_file_ihs(directory_path, seed, pop_of_interest, refpop=None, key_column
     return df[['locus_name', 'pos', key_column]]
 
 
-def read_file_xpehh(directory_path, seed, pop_of_interest, refpop, key_column='XP-EHH'):
+def read_file_xpehh(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='XP-EHH'):
     """Read XPEHH files
 
     Args:
@@ -31,8 +52,8 @@ def read_file_xpehh(directory_path, seed, pop_of_interest, refpop, key_column='X
         refpop (str): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    xpehh_path = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, pop_of_interest, refpop))
-    xpehh_path_alt = os.path.join(directory_path, '%i_%s%s_W.xpehh.out' % (seed, refpop, pop_of_interest))
+    xpehh_path = os.path.join(directory_path, parameter_model_name+'_%s_%s.xpehh.out' % (pop_of_interest, refpop))
+    xpehh_path_alt = os.path.join(directory_path, parameter_model_name+'_%s_%s.xpehh.out' % (refpop, pop_of_interest))
     if not os.path.exists(xpehh_path) and not os.path.exists(xpehh_path_alt):
         return None
 
@@ -46,7 +67,7 @@ def read_file_xpehh(directory_path, seed, pop_of_interest, refpop, key_column='X
     return df[['pos', key_column]]
 
 
-def read_file_isafe(directory_path, seed, pop_of_interest, refpop=None, key_column='iSAFE'):
+def read_file_isafe(directory_path, parameter_model_name, pop_of_interest, refpop=None, key_column='iSAFE'):
     """Read isafe files
 
     Args:
@@ -56,7 +77,7 @@ def read_file_isafe(directory_path, seed, pop_of_interest, refpop=None, key_colu
         pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    isafe_path = os.path.join(directory_path, '%i_%s.iSAFE.out' % (seed, pop_of_interest))
+    isafe_path = os.path.join(directory_path, parameter_model_name+'_%s.iSAFE.out' % (seed, pop_of_interest))
     if not os.path.exists(isafe_path):
         return None
     df = pd.read_csv(isafe_path, skiprows=1, header=None, delim_whitespace=True,
@@ -66,7 +87,7 @@ def read_file_isafe(directory_path, seed, pop_of_interest, refpop=None, key_colu
     return df[['pos', key_column]]
 
 
-def read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='Fst'):
+def read_file_fst(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='Fst'):
     """Read fst files
 
     Args:
@@ -76,8 +97,9 @@ def read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='Fst
         refpop (str): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, refpop))
-    fst_path_alt = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, refpop, pop_of_interest))
+    #fst_path = os.path.join(directory_path, '%i_%s%s.weir.fst' % (seed, pop_of_interest, refpop))
+    fst_path = os.path.join(directory_path, parameter_model_name+'_%s_%s.weir.fst' % (pop_of_interest, refpop))
+    fst_path_alt = os.path.join(directory_path, parameter_model_name+'_%s_%s.weir.fst' % (refpop, pop_of_interest))
     if not os.path.exists(fst_path) and not os.path.exists(fst_path_alt):
         return None
     if os.path.exists(fst_path):
@@ -91,23 +113,23 @@ def read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='Fst
     return df[['pos', key_column]]
 
 
-def get_seeds(path):
-    """
-    From a directory, get all seed values by searching over names
+# def get_seeds(path):
+#     """
+#     From a directory, get all seed values by searching over names
 
-    Args:
-        path (str): path to search
+#     Args:
+#         path (str): path to search
 
-    Returns:
-        list of ints: the seeds that can be iterated over
+#     Returns:
+#         list of ints: the seeds that can be iterated over
 
-    """
-    seeds = os.listdir(path)
-    seeds = list(set([int(x[:x.find('_')]) for x in seeds if x.find('100bins.norm') > -1]))
-    return seeds
+#     """
+#     seeds = os.listdir(path)
+#     seeds = list(set([int(x[:x.find('_')]) for x in seeds if x.find('100bins.norm') > -1]))
+#     return seeds
 
 
-def read_files(directory_path, seed, pop_of_interest, pops_reference):
+def read_files(directory_path, parameter_model_name, pop_of_interest, pops_reference):
     """
     Read in IHS, XPEHH, ISAFE, and FST files, merge on position, and return all statistics
 
@@ -121,27 +143,27 @@ def read_files(directory_path, seed, pop_of_interest, pops_reference):
         Pandas DataFrame: the merged output of the statistics
 
     """
-    df = read_file_ihs(directory_path, seed, pop_of_interest, refpop=None, key_column='ihs')
+    df = read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=None, key_column='ihs')
     if df is None:
         raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
 
     # Read in files
 
     for refpop in pops_reference:
-        df_xpehh = read_file_xpehh(directory_path, seed, pop_of_interest, refpop, key_column='xpehh_'+refpop )
+        df_xpehh = read_file_xpehh(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='xpehh_'+refpop )
         if df_xpehh is not None:
             df = df.merge(df_xpehh, how='outer', on='pos')
         else:
             print('WARNING: XPEHH file not found: refpop='+refpop)
 
-    df_isafe = read_file_isafe(directory_path, seed, pop_of_interest, refpop=None, key_column='isafe')
+    df_isafe = read_file_isafe(directory_path, parameter_model_name, pop_of_interest, refpop=None, key_column='isafe')
     if df_isafe is not None:
         df = df.merge(df_isafe, how='outer', on='pos')
     else:
         print('WARNING: iSAFE file not found')
 
     for refpop in pops_reference:
-        df_fst = read_file_fst(directory_path, seed, pop_of_interest, refpop, key_column='fst_'+refpop)
+        df_fst = read_file_fst(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='fst_'+refpop)
         if df_fst is not None:
             df = df.merge(df_fst, how='outer', on='pos')
         else:
@@ -158,7 +180,7 @@ def read_files(directory_path, seed, pop_of_interest, pops_reference):
     return df
 
 
-def write_output(directory_path, seed, pop_of_interest, pops_reference, df):
+def write_output(directory_path, parameter_model_name, pop_of_interest, pops_reference, df):
     """
     Write the merged output to a file
 
@@ -170,14 +192,14 @@ def write_output(directory_path, seed, pop_of_interest, pops_reference, df):
         df (Pandas DataFrame): the combined statistics for writing
 
     """
-    seed = '' if seed is None else seed
-    file_name = '%s_%s_%s_allstats.txt' % (str(seed), pop_of_interest, ''.join(pops_reference))
+    #seed = '' if seed is None else seed
+    file_name = parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference))
     file_path = os.path.join(directory_path, file_name)
     df.to_csv(file_path, sep='\t', index=False)
 
 
-def merge_all_seeds_and_write(input_directory,
-                              output_directory,
+def write_allstats(input_directory,
+                              parameter_model_name,
                               pop_of_interest,
                               pops_reference):
     """
@@ -191,18 +213,18 @@ def merge_all_seeds_and_write(input_directory,
 
     """
     pops_reference = [pops_reference] if isinstance(pops_reference, str) else pops_reference
-    seeds = get_seeds(input_directory)
-    for seed in seeds:
+    #seeds = get_seeds(input_directory)
+    #for seed in seeds:
 
-        df = read_files(input_directory, seed, pop_of_interest, pops_reference)
-        if df is None:
-            print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
-        else:
-            write_output(output_directory, seed, pop_of_interest, pops_reference, df)
+    df = read_files(input_directory, parameter_model_name, pop_of_interest, pops_reference)
+    if df is None:
+        print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
+    else:
+        write_output(input_directory, parameter_model_name, pop_of_interest, pops_reference, df)
 
 
-def merge_all_seeds_and_extract(input_directory,
-                                output_directory,
+def write_allstats_single_snp(input_directory,
+                                parameter_model_name,
                                 pop_of_interest,
                                 pops_reference,
                                 sweep_pos,
@@ -221,30 +243,32 @@ def merge_all_seeds_and_extract(input_directory,
     """
     #pops_of_interest = [pops_of_interest] if isinstance(pops_of_interest, str) else pops_of_interest
     pops_reference = [pops_reference] if isinstance(pops_reference,str) else pops_reference
-    seeds = get_seeds(input_directory)
+    #seeds = get_seeds(input_directory)
     combined = []
     #for population in pops_of_interest:
     #for refpop in pops_reference:
-    for seed in seeds:
-        df = read_files(input_directory, seed, pop_of_interest, pops_reference)
-        if df is None:
-            print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
-        else:
-            combined.append(df.loc[df['pos'] == sweep_pos, :])
+    #for seed in seeds:
+    df = read_files(input_directory, parameter_model_name, pop_of_interest, pops_reference)
+    if df is None:
+        print('WARNING: some files are missing for seed %i and population %s' % (seed, pop_of_interest))
+    else:
+        combined.append(df.loc[df['pos'] == sweep_pos, :])
 
-        if len(combined) > 0:
-            df = pd.concat(combined, axis=0, ignore_index=True)
-            write_output(output_directory, additional_name_text, pop_of_interest, pops_reference, df)
+    if len(combined) > 0:
+        df = pd.concat(combined, axis=0, ignore_index=True)
+        write_output(input_directory, paramter_model_name+'_snp'+str(sweep_pos), pop_of_interest, pops_reference, df)
 
 
-def merge_seeds_over_stp(input_directory,
-                         output_directory,
-                         selection_strength,
-                         time_of_sweep,
-                         pop_of_sweep,
-                         pop_of_interest,
-                         pops_reference,
-                         sweep_pos=None):
+# def merge_seeds_over_stp(input_directory,
+#                          output_directory,
+#                          selection_strength,
+#                          time_of_sweep,
+#                          pop_of_sweep,
+#                          pop_of_interest,
+#                          pops_reference,
+#                          sweep_pos=None):
+
+def merge_compstats(project_name, model_name, type, data_path=None, sweep_pos=None):
     """
     Iterate over populations, selection strengths, and sweep times and extract combined statistics.
 
@@ -260,22 +284,56 @@ def merge_seeds_over_stp(input_directory,
             if None, do not extract a single sweep_pos, but rather save each file
 
     """
-    selection_strength = [selection_strength] if not isinstance(selection_strength, list) else selection_strength
-    time_of_sweep = [time_of_sweep] if not isinstance(time_of_sweep, list) else time_of_sweep
-    pops_reference = [pops_reference] if isinstance(pops_reference,str) else pops_reference
+    pops = ['p1','p2','p3']
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+        base_path = opath.join(data_path, project_name)
+        slim_path = opath.join(base_path, 'slim')
+        slim_model_path = opath.join(slim_path, model_name)
 
-    for sel in selection_strength:
-        for t in time_of_sweep:
-            sub_input = os.path.join(input_directory, pop_of_sweep, 'T%i' % t, 's%s' % sel)
-            if sweep_pos is None:
-                merge_all_seeds_and_write(sub_input, output_directory, pop_of_interest, pops_reference)
-            else:
-                merge_all_seeds_and_extract(sub_input,
-                                            output_directory,
-                                            pop_of_interest,
-                                            pops_reference,
-                                            sweep_pos,
-                                            't%i_s%s' % (t, sel))
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    params = yaml.load(yaml_file)
+ 
+
+
+    #selection_strength = [selection_strength] if not isinstance(selection_strength, list) else selection_strength
+    #time_of_sweep = [time_of_sweep] if not isinstance(time_of_sweep, list) else time_of_sweep
+    #pops_reference = [pops_reference] if isinstance(pops_reference,str) else pops_reference
+
+    if type == 'sweep':
+        scoeffs = params['selection_coefficient']
+        times = params['sweep_time']
+        pops_of_interest = params['sweep_population']
+        for coeff in scoeffs:
+            for time in times:
+                for pop in pops_of_interest:
+                    parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                                            f'pop-{pop}_start-{time}')
+                    if sweep_pos is None:
+                        write_allstats(slim_model_path, parameter_model_name, pop_of_interest, pops_reference)
+                    else:
+                        write_allstats_single_snp(slim_model_path, parameter_model_name, pop_of_interest, pops_reference, sweep_pos)
+
+    elif type == 'neutral':
+        sims = params['sims']
+        for sim in range(int(sims)):
+            for pop in pops:
+                pops_reference = [x for x in pops if x!= pop]
+                parameter_model_name = (f'{model_name}_sim-{sim}')
+                write_allstats(slim_model_path, parameter_model_name, pop, pops_reference)
+
+    # for sel in selection_strength:
+    #     for t in time_of_sweep:
+    #         sub_input = os.path.join(input_directory, pop_of_sweep, 'T%i' % t, 's%s' % sel)
+    #         if sweep_pos is None:
+    #             merge_all_seeds_and_write(sub_input, output_directory, pop_of_interest, pops_reference)
+    #         else:
+    #             merge_all_seeds_and_extract(sub_input,
+    #                                         output_directory,
+    #                                         pop_of_interest,
+    #                                         pops_reference,
+    #                                         sweep_pos,
+    #                                         't%i_s%s' % (t, sel))
 
 
 def main():
