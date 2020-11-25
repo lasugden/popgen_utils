@@ -310,9 +310,9 @@ def merge_compstats(project_name, model_name, type, data_path=None, sweep_pos=No
                     parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                             f'pop-{pop}_start-{time}')
                     if sweep_pos is None:
-                        write_allstats(slim_model_path, parameter_model_name, pop_of_interest, pops_reference)
+                        write_allstats(slim_model_path, parameter_model_name, pop, pops_reference)
                     else:
-                        write_allstats_single_snp(slim_model_path, parameter_model_name, pop_of_interest, pops_reference, sweep_pos)
+                        write_allstats_single_snp(slim_model_path, parameter_model_name, pop, pops_reference, sweep_pos)
 
     elif type == 'neutral':
         sims = params['sims']
