@@ -307,6 +307,7 @@ def merge_compstats(project_name, model_name, type, data_path=None, sweep_pos=No
         for coeff in scoeffs:
             for time in times:
                 for pop in pops_of_interest:
+                    pops_reference = [x for x in pops if x!= pop]
                     parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                             f'pop-{pop}_start-{time}')
                     if sweep_pos is None:
