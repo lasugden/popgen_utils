@@ -50,7 +50,7 @@ def normalize_ihs(project_name, model_name_neutral, model_name_sweep, data_path=
     for pop in pops:
         neutral_files = ''
         for sim in range(int(sims)):
-            parameter_model_name = (f'{model_name}_sim-{sim}')
+            parameter_model_name = (f'{model_name_neutral}_sim-{sim}')
             filename = opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')
             neutral_files = neutral_files+' '+filename
             formatted_txt = txt_neutral.format(**{
@@ -68,7 +68,7 @@ def normalize_ihs(project_name, model_name_neutral, model_name_sweep, data_path=
         for coeff in params_sweep['selection_coefficient']:
             for time in params_sweep['sweep_time']:
             #for pop in params['sweep_population']:
-                parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                parameter_model_name = (f'{model_name_sweep}_coeff-{coeff}_'
                                             f'pop-{pop}_start-{time}')
                 filename = opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')
                 if not os.path.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out.100bins.norm')):
