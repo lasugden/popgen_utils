@@ -19,6 +19,62 @@ from popgen_utils.misc import hashing
 
 from popgen_utils.snp_statistics import oscar_scripts
 
+def normalize_ihs(project_name, model_name, data_path=None):
+    # first normalize all neutral simulations together
+    pops = ['p1','p2','p3']
+    
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+        base_path = opath.join(data_path, project_name)
+        slim_path = opath.join(base_path, 'slim')
+        slim_model_path = opath.join(slim_path, model_name)
+        bash_path = opath.join(slim_model_path,'bash')
+        if not opath.exists(bash_path):
+            os.mkdir(bash_path)
+
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    params = yaml.load(yaml_file)    
+
+    txt_neutral = ilresources.open_text(oscar_scripts, 'norm_neutral.txt').read()
+    txt_sweep = ilresources.open_text(oscar_scripts, 'norm_sweep.txt').read()
+
+    sims = params['sims']
+    for pop in pops:
+        neutral_files = ''
+        for sim in range(int(sims)):
+            parameter_model_name = (f'{model_name}_sim-{sim}')
+            filename = opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')
+            neutral_files = neutral_files+' '+filename
+            formatted_txt = txt_neutral.format(**{
+                'file_list' : neutral_files,
+                'log_file' : 'ihs_norm_neutral_'+pop
+                })
+        fp = open(opath.join(bash_path,'normalize_ihs_neutral_'+pop+'.sh'),'w')
+        fp.write(formatted_txt)
+        fp.close()
+        os.system('sbatch '+opath.join(bash_path,'normalize_ihs_neutral.sh'))
+
+        #for this population of interest, normalize sweep files
+
+
+        for coeff in params['selection_coefficient']:
+            for time in params['sweep_time']:
+            #for pop in params['sweep_population']:
+                parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                                            f'pop-{pop}_start-{time}')
+                filename = opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')
+                if not os.path.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out.100bins.norm')):
+                    formatted_txt = txt_sweep.format(**{
+                        'sweep_file' : filename,
+                        'neutral_file_list' : neutral_files,
+                        'log_file' : 'ihs_norm_sweep_'+parameter_model_name
+                        })
+                    fp = open(opath.join(bash_path,'normalize_ihs_sweep_'+parameter_model_name+'.sh'),'w')
+                    fp.write(formatted_txt)
+                    fp.close()
+                    os.system('sbatch '+opath.join(bash_path,'normalize_ihs_sweep_'+parameter_model_name+'.sh'))
+
+
 
 def run_ihs(project_name, model_name, type, data_path=None):
 
