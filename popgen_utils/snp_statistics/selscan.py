@@ -61,7 +61,7 @@ def normalize_ihs(project_name, model_name_neutral, model_name_sweep, data_path=
         fp = open(opath.join(bash_path_neutral,'normalize_ihs_neutral_'+pop+'.sh'),'w')
         fp.write(formatted_txt)
         fp.close()
-        os.system('sbatch '+opath.join(bash_path_neutral,'normalize_ihs_neutral.sh'))
+        os.system('sbatch '+opath.join(bash_path_neutral,'normalize_ihs_neutral_'+pop+'.sh'))
 
         #for this population of interest, normalize sweep files
 
