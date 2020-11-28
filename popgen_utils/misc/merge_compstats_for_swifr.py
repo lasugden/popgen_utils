@@ -192,9 +192,9 @@ def read_files(directory_path, parameter_model_name, pop_of_interest, pops_refer
 
 
     # Fill in NaNs appropriately
-    nan_names = df['locus_name'].isnull()
-    if nan_names.sum() > 0:
-        df.loc[nan_names, 'locus_name'] = 'SNP_POS_' + df.loc[nan_names, 'pos'].apply(str)
+    #nan_names = df['locus_name'].isnull()
+    #if nan_names.sum() > 0:
+    #    df.loc[nan_names, 'locus_name'] = 'SNP_POS_' + df.loc[nan_names, 'pos'].apply(str)
 
     df = df.loc[df.isnull().sum(axis=1) < 4, :]
     df = df.fillna(-998)
