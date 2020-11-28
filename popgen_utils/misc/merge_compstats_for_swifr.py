@@ -40,7 +40,7 @@ def read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=
     if os.stat(os.path.join(directory_path, parameter_model_name+'_%s.ihs.out.100bins.norm' % (pop_of_interest))).st_size == 0:
         return None
     df = pd.read_csv(ihs_path, skiprows=0, header=None, delim_whitespace=True, usecols=range(7),
-                     names=['locus_name', 'pos', 'freq', 'ihh1', 'ihh2', 'ihs', key_column])
+                     names=['locus_name', 'pos', 'freq', 'ihh1', 'ihh2', 'ihs_unnormalized', key_column])
     return df[['locus_name', 'pos', key_column]]
 
 
