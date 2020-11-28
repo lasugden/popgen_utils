@@ -73,7 +73,7 @@ def normalize_ihs(project_name, model_name_neutral, model_name_sweep, data_path=
                                             f'pop-{pop}_start-{time}')
                 filename = opath.join(slim_model_path_sweep,f'{parameter_model_name}_{pop}.ihs.out')
                 if opath.isfile(filename):
-                    if not os.path.isfile(opath.join(slim_model_path_sweep,f'{parameter_model_name}_{pop}.ihs.out.100bins.norm')):
+                    if not os.path.isfile(opath.join(slim_model_path_sweep,f'{parameter_model_name}_{pop}.ihs.out.100bins.norm')) or opath.getsize(opath.join(slim_model_path_sweep,f'{parameter_model_name}_{pop}.ihs.out.100bins.norm'))<2:
                         formatted_txt = txt_sweep.format(**{
                             'sweep_file' : filename,
                             'neutral_file_list' : neutral_files,
@@ -131,7 +131,7 @@ def run_ihs(project_name, model_name, type, data_path=None):
         for sim in range(int(sims)):
             for pop in pops:
                 parameter_model_name = (f'{model_name}_sim-{sim}')
-                if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')):
+                if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out')) or opath.getsize(opath.join(slim_model_path,f'{parameter_model_name}_{pop}.ihs.out'))<2:
                     formatted_txt = txt.format(**{
                         'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
                         'map_file' : opath.join(slim_model_path,f'{parameter_model_name}_map.txt'),
@@ -173,7 +173,7 @@ def run_xpehh(project_name, model_name, type, data_path=None):
                     for refpop in [x for x in pops if x!= pop]:
                         parameter_model_name = (f'{model_name}_coeff-{coeff}_'
                                                 f'pop-{pop}_start-{time}')
-                        if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out')):
+                        if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out')) or opath.getsize(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out'))<2:
 
                             formatted_txt = txt.format(**{
                                 'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
@@ -194,7 +194,7 @@ def run_xpehh(project_name, model_name, type, data_path=None):
                 for refpop in pops:
                     if pops.index(refpop) > pops.index(pop): #only run p1p2 e.g., not p2p1
                         parameter_model_name = (f'{model_name}_sim-{sim}')
-                        if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out')):
+                        if not opath.isfile(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out')) or opath.getsize(opath.join(slim_model_path,f'{parameter_model_name}_{pop}_{refpop}.xpehh.out'))<2:
 
                             formatted_txt = txt.format(**{
                                 'hap_file' : opath.join(slim_model_path,f'{parameter_model_name}_{pop}.hap'),
