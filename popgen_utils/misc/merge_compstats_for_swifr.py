@@ -22,7 +22,13 @@ from popgen_utils.snp_statistics import oscar_scripts
 import argparse
 import pandas as pd
 
-
+def read_file_mapfile(directory_path, paramter_model_name, pop_of_interest=None, refpop=None):
+    mappath = os.path.join(directory_path, parameter_model_name+'_map.txt')
+    if not os.path.exists(mappath):
+        return None
+    df = pd.read_csv(mappath, skiprows=0, header=None, delim_whitespace=True,
+            names=['chrom_name', 'locus_name', 'mappos', 'pos'])
+    return df[['locus_name','pos']]
 
 def read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=None, key_column='iHS'):
     """Read ihs files
@@ -145,16 +151,20 @@ def read_files(directory_path, parameter_model_name, pop_of_interest, pops_refer
         Pandas DataFrame: the merged output of the statistics
 
     """
-    refpop_num = 0
+    df = read_file_mapfile(directory_path, parameter_model_name)
+    if df is None:
+        raise NotImplementedError('Could not find fst file. We do not yet account for naming of loci without reading in mapfile data.')
+
+    #refpop_num = 0
 
     for refpop in pops_reference:
-        refpop_num += 1
+        #refpop_num += 1
         df_fst = read_file_fst(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='fst_'+refpop)
-        if df_fst is None and refpop_num == 1:
-            raise NotImplementedError('Could not find fst file. We do not yet account for naming of loci without reading in Fst data.')
-        if refpop_num == 1:
-            df = df_fst
-        elif refpop_num > 1 and df_fst is not None:
+        #if df_fst is None and refpop_num == 1:
+        #    raise NotImplementedError('Could not find fst file. We do not yet account for naming of loci without reading in Fst data.')
+        #if refpop_num == 1:
+        #    df = df_fst
+        if df_fst is not None:
             df = df.merge(df_fst, how='outer', on='pos')
         else:
             print('WARNING: FST file not found')    
