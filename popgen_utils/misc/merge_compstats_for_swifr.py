@@ -145,9 +145,24 @@ def read_files(directory_path, parameter_model_name, pop_of_interest, pops_refer
         Pandas DataFrame: the merged output of the statistics
 
     """
-    df = read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=None, key_column='ihs')
-    if df is None:
-        raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
+    refpop_num = 0
+
+    for refpop in pops_reference:
+        refpop_num += 1
+        df_fst = read_file_fst(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='fst_'+refpop)
+        if df_fst is None and refpop_num == 1:
+            raise NotImplementedError('Could not find fst file. We do not yet account for naming of loci without reading in Fst data.')
+        if refpop == 1:
+            df = df_fst
+        elif refpop_num > 1 and df_fst is not None:
+            df = df.merge(df_fst, how='outer', on='pos')
+        else:
+            print('WARNING: FST file not found')    
+
+    df_ihs = read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=None, key_column='ihs')
+    if df_ihs is not None:
+        df = df.merge(df_ihs, how='outer', on='pos')
+        #raise NotImplementedError('Could not find ihs file. We do not yet account for naming of loci without reading in IHS data.')
 
     # Read in files
 
@@ -164,12 +179,7 @@ def read_files(directory_path, parameter_model_name, pop_of_interest, pops_refer
     else:
         print('WARNING: iSAFE file not found')
 
-    for refpop in pops_reference:
-        df_fst = read_file_fst(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='fst_'+refpop)
-        if df_fst is not None:
-            df = df.merge(df_fst, how='outer', on='pos')
-        else:
-            print('WARNING: FST file not found')
+
 
     # Fill in NaNs appropriately
     nan_names = df['locus_name'].isnull()
