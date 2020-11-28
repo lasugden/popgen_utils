@@ -79,7 +79,7 @@ def read_file_isafe(directory_path, parameter_model_name, pop_of_interest, refpo
         pops_reference (str, unused): in the format 'pN' where N is an integer in 1-3
         key_column (str, optional): Name of the key column used by the file. Defaults to 'iHS'.
     """
-    isafe_path = os.path.join(directory_path, parameter_model_name+'_%s.iSAFE.out' % (seed, pop_of_interest))
+    isafe_path = os.path.join(directory_path, parameter_model_name+'_%s.iSAFE.out' % (pop_of_interest))
     if not os.path.exists(isafe_path):
         return None
     df = pd.read_csv(isafe_path, skiprows=1, header=None, delim_whitespace=True,
