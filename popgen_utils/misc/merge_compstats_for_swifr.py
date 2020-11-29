@@ -291,7 +291,7 @@ def write_allstats_single_snp(input_directory,
 #                          sweep_pos=None):
 
 
-def extract_compstats_region(project_name, model_name, pop_of_interest, sweep_pos_1, sweep_pos_2=None, additional_name_text=None):
+def extract_compstats_region(project_name, model_name, pop_of_interest, sweep_pos_1, sweep_pos_2=None, additional_name_text=None, data_path=None):
     pops = ['p1','p2','p3']
 
     if data_path is None:
