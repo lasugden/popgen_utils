@@ -291,7 +291,8 @@ def write_allstats_single_snp(input_directory,
 #                          sweep_pos=None):
 
 
-def extract_compastats_region(project_name, model_name, sweep_pos_min, sweep_pos_max, additional_name_text=None):
+def extract_compstats_region(project_name, model_name, pop_of_interest, sweep_pos_1, sweep_pos_2=None, additional_name_text=None):
+    pops = ['p1','p2','p3']
 
     if data_path is None:
         data_path = config.params()['paths']['data']
@@ -304,13 +305,31 @@ def extract_compastats_region(project_name, model_name, sweep_pos_min, sweep_pos
 
     scoeffs = params['selection_coefficient']
     times = params['sweep_time']
-    pops_of_interest = params['sweep_population']
+    #pops_of_interest = params['sweep_population']
+
+    df_list = []
+    param_list = []
+
     for coeff in scoeffs:
         for time in times:
-            for pop in pops_of_interest:
-                pops_reference = [x for x in pops if x!= pop]
-                parameter_model_name = (f'{model_name}_coeff-{coeff}_'
-                                        f'pop-{pop}_start-{time}')    
+            #for pop in pops_of_interest:
+            pops_reference = [x for x in pops if x!= pop_of_interest]
+            parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                                    f'pop-{pop_of_interest}_start-{time}')
+            param_list.append(parameter_model_name)
+            allstats_file_name = parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference))
+            df = pd.read_csv(opath.join(slim_model_path,allstats_file_name), header=0, delim_whitespace=True)
+            if sweep_pos_2 == None:
+                df_list.append(df.loc[df['pos']==sweep_pos_1])
+            else:
+                df_list.append(df.loc[df['pos'].isin(range(sweep_pos_1, sweep_pos2+1))])
+    region_allstats = pd.concat(df_list)
+    region_allstats['parameters'] = param_list
+
+    file_name = pop_of_interest+'_'+additional_name_text+'_allstats.txt'
+    file_path = os.path.join(slim_model_path, file_name)
+    region_allstats.to_csv(file_path, sep='\t', index=False)
+
 
 
 
