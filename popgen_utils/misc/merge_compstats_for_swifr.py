@@ -42,9 +42,9 @@ def read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=
     """
     ihs_path = os.path.join(directory_path, parameter_model_name+'_%s.ihs.out.100bins.norm' % (pop_of_interest))
     if not os.path.exists(ihs_path):
-        return None
+        return pd.DataFrame(columns=['pos', key_column])
     if os.stat(os.path.join(directory_path, parameter_model_name+'_%s.ihs.out.100bins.norm' % (pop_of_interest))).st_size == 0:
-        return None
+        return pd.DataFrame(columns=['pos', key_column])
     df = pd.read_csv(ihs_path, skiprows=0, header=None, delim_whitespace=True, usecols=range(7),
                      names=['locus_name', 'pos', 'freq', 'ihh1', 'ihh2', 'ihs_unnormalized', key_column])
     return df[['pos', key_column]]
@@ -63,7 +63,7 @@ def read_file_xpehh(directory_path, parameter_model_name, pop_of_interest, refpo
     xpehh_path = os.path.join(directory_path, parameter_model_name+'_%s_%s.xpehh.out' % (pop_of_interest, refpop))
     xpehh_path_alt = os.path.join(directory_path, parameter_model_name+'_%s_%s.xpehh.out' % (refpop, pop_of_interest))
     if not os.path.exists(xpehh_path) and not os.path.exists(xpehh_path_alt):
-        return None
+        return pd.DataFrame(columns=['pos', key_column])
 
     if os.path.exists(xpehh_path):
         df = pd.read_csv(xpehh_path, skiprows=1, header=None, delim_whitespace=True,
@@ -87,7 +87,7 @@ def read_file_isafe(directory_path, parameter_model_name, pop_of_interest, refpo
     """
     isafe_path = os.path.join(directory_path, parameter_model_name+'_%s.iSAFE.out' % (pop_of_interest))
     if not os.path.exists(isafe_path):
-        return None
+        return pd.DataFrame(columns=['pos', key_column])
     df = pd.read_csv(isafe_path, skiprows=1, header=None, delim_whitespace=True,
                      names=['pos', key_column, 'daf'])
     # Match locations for 0-indexing and 1-indexing
@@ -109,7 +109,7 @@ def read_file_fst(directory_path, parameter_model_name, pop_of_interest, refpop,
     fst_path = os.path.join(directory_path, parameter_model_name+'_%s_%s.weir.fst' % (pop_of_interest, refpop))
     fst_path_alt = os.path.join(directory_path, parameter_model_name+'_%s_%s.weir.fst' % (refpop, pop_of_interest))
     if not os.path.exists(fst_path) and not os.path.exists(fst_path_alt):
-        return None
+        return pd.DataFrame(columns=['pos', key_column])
     if os.path.exists(fst_path):
         df = pd.read_csv(fst_path, skiprows=1, header=None, delim_whitespace=True,
                      names=['chrom', 'pos', key_column])
@@ -153,7 +153,7 @@ def read_files(directory_path, parameter_model_name, pop_of_interest, pops_refer
     """
     df = read_file_mapfile(directory_path, parameter_model_name)
     if df is None:
-        raise NotImplementedError('Could not find fst file. We do not yet account for naming of loci without reading in mapfile data.')
+        raise NotImplementedError('Could not find map file. We do not yet account for naming of loci without reading in mapfile data.')
 
     #refpop_num = 0
 
