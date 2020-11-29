@@ -324,7 +324,7 @@ def extract_compstats_region(project_name, model_name, pop_of_interest, sweep_po
                 df_slice['parameters'] = parameter_model_name
                 df_list.append(df_slice)
             else:
-                df_slice = df.loc[df['pos'].isin(range(sweep_pos_1, sweep_pos2+1))]
+                df_slice = df.loc[df['pos'].isin(range(sweep_pos_1, sweep_pos_2+1))]
                 df_slice['parameters'] = parameter_model_name
                 df_list.append(df_slice)
     region_allstats = pd.concat(df_list)
