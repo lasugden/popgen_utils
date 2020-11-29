@@ -47,7 +47,7 @@ def read_file_ihs(directory_path, parameter_model_name, pop_of_interest, refpop=
         return None
     df = pd.read_csv(ihs_path, skiprows=0, header=None, delim_whitespace=True, usecols=range(7),
                      names=['locus_name', 'pos', 'freq', 'ihh1', 'ihh2', 'ihs_unnormalized', key_column])
-    return df[['locus_name', 'pos', key_column]]
+    return df[['pos', key_column]]
 
 
 def read_file_xpehh(directory_path, parameter_model_name, pop_of_interest, refpop, key_column='XP-EHH'):
@@ -289,6 +289,30 @@ def write_allstats_single_snp(input_directory,
 #                          pop_of_interest,
 #                          pops_reference,
 #                          sweep_pos=None):
+
+
+def extract_compastats_region(project_name, model_name, sweep_pos_min, sweep_pos_max, additional_name_text=None):
+
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+        base_path = opath.join(data_path, project_name)
+        slim_path = opath.join(base_path, 'slim')
+        slim_model_path = opath.join(slim_path, model_name)
+
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    params = yaml.load(yaml_file)
+
+    scoeffs = params['selection_coefficient']
+    times = params['sweep_time']
+    pops_of_interest = params['sweep_population']
+    for coeff in scoeffs:
+        for time in times:
+            for pop in pops_of_interest:
+                pops_reference = [x for x in pops if x!= pop]
+                parameter_model_name = (f'{model_name}_coeff-{coeff}_'
+                                        f'pop-{pop}_start-{time}')    
+
+
 
 def merge_compstats(project_name, model_name, type, data_path=None, sweep_pos=None):
     """
