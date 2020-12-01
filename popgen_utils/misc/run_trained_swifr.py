@@ -15,7 +15,7 @@ except ImportError:
 
 from popgen_utils import config
 from popgen_utils.misc import hashing
-
+from popgen_utils.misc import oscar_scripts
 
 def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest, 
     swifr_trained_path, out_path, pi_vec, data_path=None):
