@@ -51,8 +51,8 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
                                             f'pop-{pop_of_interest}_start-{time}')
     			allstats_file = opath.join(slim_model_path, 
     				parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
-    			path2trained = opath.join(slim_model_path, swifr_trained_path)
-    			outfile = opath.join(slim_model_path, out_path, 'sweep', parameter_model_name+'_classified')
+    			path2trained = opath.join(slim_path, swifr_trained_path)
+    			outfile = opath.join(slim_path, out_path, 'sweep', parameter_model_name+'_classified')
     			os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
     				' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
     elif type == 'neutral':
@@ -60,8 +60,8 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
     		parameter_model_name = (f'{model_name}_sim-{sim}')
     		allstats_file = opath.join(slim_model_path, 
     			parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
-    		path2trained = opath.join(slim_model_path, swifr_trained_path)
-    		outfile = opath.join(slim_model_path, out_path, 'neutral', parameter_model_name+'_classified')
+    		path2trained = opath.join(slim_path, swifr_trained_path)
+    		outfile = opath.join(slim_path, out_path, 'neutral', parameter_model_name+'_classified')
     		os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
     			' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
 
