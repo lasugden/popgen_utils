@@ -5,6 +5,17 @@ from datetime import datetime
 import os
 import os.path as opath
 import yaml
+try:
+    import importlib.resources as ilresources
+except ImportError:
+    try:
+        import importlib_resources as ilresources
+    except ImportError:
+        raise ImportError('Must install backport of importlib_resources if not using Python >= 3.7')
+
+from popgen_utils import config
+from popgen_utils.misc import hashing
+
 
 def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest, 
 	swifr_trained_path, out_path, pi_vec, data_path=None):
