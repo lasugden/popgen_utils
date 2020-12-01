@@ -22,6 +22,7 @@ from popgen_utils.snp_statistics import oscar_scripts
 import argparse
 import pandas as pd
 
+
 def read_file_mapfile(directory_path, parameter_model_name, pop_of_interest=None, refpop=None):
     mappath = os.path.join(directory_path, parameter_model_name+'_map.txt')
     if not os.path.exists(mappath):
