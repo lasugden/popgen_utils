@@ -54,7 +54,7 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
     			path2trained = opath.join(slim_model_path, swifr_trained_path)
     			outfile = opath.join(slim_model_path, out_path, 'sweep', parameter_model_name+'_classified')
     			os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
-    				' --pi '+' '.join(pi_vec)+' --outfile '+outfile)
+    				' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
     elif type == 'neutral':
     	for sim in params['sims']:
     		parameter_model_name = (f'{model_name}_sim-{sim}')
@@ -63,7 +63,7 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
     		path2trained = opath.join(slim_model_path, swifr_trained_path)
     		outfile = opath.join(slim_model_path, out_path, 'neutral', parameter_model_name+'_classified')
     		os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
-    			' --pi '+' '.join(pi_vec)+' --outfile '+outfile)
+    			' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
 
 
 
