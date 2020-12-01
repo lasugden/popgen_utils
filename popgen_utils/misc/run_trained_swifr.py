@@ -18,7 +18,7 @@ from popgen_utils.misc import hashing
 
 
 def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest, 
-	swifr_trained_path, out_path, pi_vec, data_path=None):
+    swifr_trained_path, out_path, pi_vec, data_path=None):
     """
     Iterate over populations, selection strengths, and sweep times and extract combined statistics.
 
@@ -47,49 +47,50 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
     txt = ilresources.open_text(oscar_scripts, 'run_trained_swifr.txt').read()
     
     if type == 'sweep':
-    	for scoeff in params['selection_coefficient']:
-    		for time in params['sweep_time']:
-    			pops_reference = [x for x in pops if x != pop_of_interest]
-    			parameter_model_name = (f'{model_name}_coeff-{scoeff}_'
+        for scoeff in params['selection_coefficient']:
+            for time in params['sweep_time']:
+                pops_reference = [x for x in pops if x != pop_of_interest]
+                parameter_model_name = (f'{model_name}_coeff-{scoeff}_'
                                             f'pop-{pop_of_interest}_start-{time}')
-    			allstats_file = opath.join(slim_model_path, 
-    				parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
-    			path2trained = opath.join(slim_path, swifr_trained_path)
-    			outfile = opath.join(slim_path, out_path, 'sweep', parameter_model_name+'_classified')
-		        formatted_txt = txt.format(**{
-		            'path2trained' : path2trained,
-		            'allstats_file' : allstats_file,
-		            'pi_vals' : ' '.join([str(x) for x in pi_vec])
-		            'outfile' : outfile
-		            'log_file' : opath.join(bash_path,parameter_model_name+'_classify_'+pop_of_interest),
-		            })
-		        fp = open(opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'),'w')
-		        fp.write(formatted_txt)
-		        fp.close()
-		        os.system('sbatch '+opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'))
-    			#os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
-    			#	' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
+                allstats_file = opath.join(slim_model_path, 
+                    parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
+                path2trained = opath.join(slim_path, swifr_trained_path)
+                outfile = opath.join(slim_path, out_path, 'sweep', parameter_model_name+'_classified')
+                formatted_txt = txt.format(**{
+                    'path2trained' : path2trained,
+                    'allstats_file' : allstats_file,
+                    'pi_vals' : ' '.join([str(x) for x in pi_vec])
+                    'outfile' : outfile
+                    'log_file' : opath.join(bash_path,parameter_model_name+'_classify_'+pop_of_interest),
+                    })
+                fp = open(opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'),'w')
+                fp.write(formatted_txt)
+                fp.close()
+                os.system('sbatch '+opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'))
+                #os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
+                #   ' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
+                
     elif type == 'neutral':
-    	for sim in params['sims']:
-    		parameter_model_name = (f'{model_name}_sim-{sim}')
-    		allstats_file = opath.join(slim_model_path, 
-    			parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
-    		path2trained = opath.join(slim_path, swifr_trained_path)
-    		outfile = opath.join(slim_path, out_path, 'neutral', parameter_model_name+'_classified')
-	        formatted_txt = txt.format(**{
-	            'path2trained' : path2trained,
-	            'allstats_file' : allstats_file,
-	            'pi_vals' : ' '.join([str(x) for x in pi_vec])
-	            'outfile' : outfile
-	            'log_file' : opath.join(bash_path,parameter_model_name+'_classify_'+pop_of_interest),
-	            })
-	        fp = open(opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'),'w')
-	        fp.write(formatted_txt)
-	        fp.close()
-	        os.system('sbatch '+opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'))
-    		
-    		#os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
-    		#	' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
+        for sim in params['sims']:
+            parameter_model_name = (f'{model_name}_sim-{sim}')
+            allstats_file = opath.join(slim_model_path, 
+                parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
+            path2trained = opath.join(slim_path, swifr_trained_path)
+            outfile = opath.join(slim_path, out_path, 'neutral', parameter_model_name+'_classified')
+            formatted_txt = txt.format(**{
+                'path2trained' : path2trained,
+                'allstats_file' : allstats_file,
+                'pi_vals' : ' '.join([str(x) for x in pi_vec])
+                'outfile' : outfile
+                'log_file' : opath.join(bash_path,parameter_model_name+'_classify_'+pop_of_interest),
+                })
+            fp = open(opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'),'w')
+            fp.write(formatted_txt)
+            fp.close()
+            os.system('sbatch '+opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'))
+            
+            #os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
+            #   ' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
 
 
 
