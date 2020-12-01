@@ -59,8 +59,8 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
                 formatted_txt = txt.format(**{
                     'path2trained' : path2trained,
                     'allstats_file' : allstats_file,
-                    'pi_vals' : ' '.join([str(x) for x in pi_vec])
-                    'outfile' : outfile
+                    'pi_vals' : ' '.join([str(x) for x in pi_vec]),
+                    'outfile' : outfile,
                     'log_file' : opath.join(bash_path,parameter_model_name+'_classify_'+pop_of_interest),
                     })
                 fp = open(opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'),'w')
@@ -69,7 +69,7 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
                 os.system('sbatch '+opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'))
                 #os.system('swifr_test --path2trained '+path2trained+' --file '+allstats_file+
                 #   ' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
-                
+
     elif type == 'neutral':
         for sim in params['sims']:
             parameter_model_name = (f'{model_name}_sim-{sim}')
@@ -80,8 +80,8 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
             formatted_txt = txt.format(**{
                 'path2trained' : path2trained,
                 'allstats_file' : allstats_file,
-                'pi_vals' : ' '.join([str(x) for x in pi_vec])
-                'outfile' : outfile
+                'pi_vals' : ' '.join([str(x) for x in pi_vec]),
+                'outfile' : outfile,
                 'log_file' : opath.join(bash_path,parameter_model_name+'_classify_'+pop_of_interest),
                 })
             fp = open(opath.join(bash_path, parameter_model_name+'_classify_'+pop_of_interest+'.sh'),'w')
