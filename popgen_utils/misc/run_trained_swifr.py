@@ -73,6 +73,7 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
 
     elif type == 'neutral':
         for sim in params['sims']:
+            pops_reference = [x for x in pops if x!= pop_of_interest]
             parameter_model_name = (f'{model_name}_sim-{sim}')
             allstats_file = opath.join(slim_model_path, 
                 parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
