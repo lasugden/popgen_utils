@@ -72,7 +72,7 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
                     #   ' --pi '+' '.join([str(x) for x in pi_vec])+' --outfile '+outfile)
 
     elif type == 'neutral':
-        for sim in params['sims']:
+        for sim in range(int(params['sims'])):
             pops_reference = [x for x in pops if x!= pop_of_interest]
             parameter_model_name = (f'{model_name}_sim-{sim}')
             allstats_file = opath.join(slim_model_path, 
