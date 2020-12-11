@@ -78,7 +78,7 @@ def run_swifr_on_training_data(project_name, model_name, type, pop_of_interest,
             allstats_file = opath.join(slim_model_path, 
                 parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
             path2trained = opath.join(slim_path, swifr_trained_path)
-            outfile = opath.join(slim_path, out_path, 'neutral', parameter_model_name+'_classified')
+            outfile = opath.join(slim_path, out_path, 'neutral', parameter_model_name+'_'+pop_of_interest+'_classified')
             if not opath.exists(outfile):
                 formatted_txt = txt.format(**{
                     'path2trained' : path2trained,
