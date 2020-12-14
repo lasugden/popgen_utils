@@ -57,7 +57,7 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
         file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
         stats = file.read()
         file.close()
-        stats = stats.strip().splitliines()
+        stats = stats.strip().splitlines()
 
 
         #neutral and sweep params
