@@ -207,7 +207,7 @@ def get_tprate_fprate_AODE(dataframe_neg, dataframe_pos, stat1, stat2, threshold
         tns[i] = len(dataframe_neg[dataframe_neg[stat1]/(dataframe_neg[stat1]+dataframe_neg[stat2])<=thresh])
         fns[i] = len(dataframe_pos[dataframe_pos[stat1]/(dataframe_pos[stat1]+dataframe_pos[stat2])<=thresh])
         tps[i] = len(dataframe_pos[dataframe_pos[stat1]/(dataframe_pos[stat1]+dataframe_pos[stat2])>thresh])
-        if tps[i]+fns[i] != 0 and fps[i]+tns[i] != 0
+        if tps[i]+fns[i] != 0 and fps[i]+tns[i] != 0:
             tp_rates[i] = float(tps[i])/(tps[i]+fns[i])
             fp_rates[i] = float(fps[i])/(fps[i]+tns[i])
         else:
