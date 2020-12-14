@@ -69,7 +69,7 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
         #read in all neutral files
         df_list_neutral = []
         for sim in range(int(params_neutral['sims'])):
-            parameter_model_name = (f'{model_name}_sim-{sim}')
+            parameter_model_name = (f'{model_name_neutral}_sim-{sim}')
             classified_file = opath.join(slim_path, swifr_out_path, 'neutral', parameter_model_name+'_'+pop_of_interest+'_classified')
             df_list_neutral.append(pd.read_csv(classified_file, header=0, delim_whitespace=True))
         neutral_df = pd.concat(df_list_neutral)
@@ -79,7 +79,7 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
         df_list_linked = []
         for scoeff in params_sweep['selection_coefficient']:
             for time in params_sweep['sweep_time']:
-                parameter_model_name = (f'{model_name}_coeff-{scoeff}_'
+                parameter_model_name = (f'{model_name_sweep}_coeff-{scoeff}_'
                                             f'pop-{pop_of_interest}_start-{time}')
                 classified_file = opath.join(slim_path, swifr_out_path, 'sweep', parameter_model_name+'_classified')
                 df = pd.read_csv(classified_file, header=0, delim_whitespace=True)
