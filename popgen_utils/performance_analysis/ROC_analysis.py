@@ -2,6 +2,9 @@ import multiprocessing as mp
 import subprocess
 from matplotlib import pyplot as plt
 
+from popgen_utils import config
+from popgen_utils.misc import hashing
+
 from datetime import datetime
 import os
 import os.path as opath
