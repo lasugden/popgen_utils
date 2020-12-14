@@ -101,7 +101,7 @@ def get_score_thresholds(list_of_scores):
     '''
     scores = sorted(list_of_scores)
     indices = [int((int(x)*len(scores)/100)) for x in range(100)]
-    print(indices)
+    #print(indices)
     return [scores[index] for index in indices]
 
 
