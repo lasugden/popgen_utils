@@ -100,7 +100,7 @@ def get_score_thresholds(list_of_scores):
     returns: vector of 100 score thresholds (percentiles)
     '''
     scores = sorted(list_of_scores)
-    indices = [(float(x)/100)*length(scores) for x in range(100)]
+    indices = [(float(x)/100)*len(scores) for x in range(100)]
     return [scores[index] for index in indices]
 
 
