@@ -125,8 +125,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
 
     #read_classified_files_all
     [neutral_df, sweep_df, linked_df] = read_classified_files_all(project_name, 
-        swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest,
-        data_path)
+        swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest)
         
     file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
     stats = file.read()
