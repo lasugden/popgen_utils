@@ -24,7 +24,7 @@ except ImportError:
 #   df = df[names2use]
 #   return df
 
-def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest):
+def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, data_path=None):
     '''
     project_name (str): name of project #gives the path
     swifr_out_path (str): where classified files live (top directories should correspond to neutral and sweep sims; relative to shared data path)
@@ -102,7 +102,7 @@ def get_score_thresholds(list_of_scores):
 
 
 
-def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest):
+def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, data_path=None):
     ''' 
     project_name (str): name of project #gives the path
     swifr_out_path (str): where classified files live (top directories should correspond to neutral and sweep sims; relative to shared data path)
@@ -122,7 +122,8 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
 
     #read_classified_files_all
     [neutral_df, sweep_df, linked_df] = read_classified_files_all(project_name, 
-        swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest)
+        swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest,
+        data_path=data_path)
         
     file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
     stats = file.read()
