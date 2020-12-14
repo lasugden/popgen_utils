@@ -71,7 +71,7 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
         for sim in range(int(params_neutral['sims'])):
             parameter_model_name = (f'{model_name_neutral}_sim-{sim}')
             classified_file = opath.join(slim_path, swifr_out_path, 'neutral', parameter_model_name+'_'+pop_of_interest+'_classified')
-            df_list_neutral.append(pd.read_csv(classified_file, header=0, delim_whitespace=True))
+            df_list_neutral.append(pd.read_csv(classified_file, header=0, delim_whitespace=True, na_values='-998'))
         neutral_df = pd.concat(df_list_neutral)
 
         #read in all sweep files
@@ -82,7 +82,7 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
                 parameter_model_name = (f'{model_name_sweep}_coeff-{scoeff}_'
                                             f'pop-{pop_of_interest}_start-{time}')
                 classified_file = opath.join(slim_path, swifr_out_path, 'sweep', parameter_model_name+'_classified')
-                df = pd.read_csv(classified_file, header=0, delim_whitespace=True)
+                df = pd.read_csv(classified_file, header=0, delim_whitespace=True, na_values='-998')
                 sw = df.loc[df['pos'] == sweep_pos]
                 li = df.loc[df['pos'] != sweep_pos]
                 df_list_sweeppos.append(sw)
@@ -158,7 +158,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
         [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, stat2thresholds[stat])
         stat2rates[stat][0] = tp_rates
         stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate(neutral_df, sweep_df, 'P(sweep)', stat2thresholds['P(sweep)'])
+    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, sweep_df, 'P(sweep)', 'P(neutral)', stat2thresholds['P(sweep)'])
     stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
     plot_ROC(stat2rates, out_path, title='Sweep v Neutral')
@@ -169,7 +169,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
         [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, stat2thresholds[stat])
         stat2rates[stat][0] = tp_rates
         stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate(linked_df, sweep_df, 'P(sweep)', stat2thresholds['P(sweep)'])
+    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df, sweep_df, 'P(sweep)', 'P(linked)', stat2thresholds['P(sweep)'])
     stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
     plot_ROC(stat2rates, out_path, title='Sweep v Linked')
@@ -180,10 +180,36 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
         [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, stat2thresholds[stat])
         stat2rates[stat][0] = tp_rates
         stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate(neutral_df, linked_df, 'P(linked)', stat2thresholds['P(linked)'])
+    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, linked_df, 'P(linked)', 'P(neutral)', stat2thresholds['P(linked)'])
     stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
     plot_ROC(stat2rates, out_path, title='Linked v Neutral')
+
+def get_tprate_fprate_AODE(dataframe_neg, dataframe_pos, stat1, stat2, thresholds):
+    '''
+    dataframe_neg (df): dataframe for negatives
+    dataframe_pos (df): dataframe for positives
+    stat1 (str): "positive" statistic (e.g. P(sweep))
+    stat2 (str): "negative" statistic (e.g. P(neutral))
+    thresholds (list): thresholds
+    '''
+    fps = [0 for i in range(len(thresholds))]
+    tps = [0 for i in range(len(thresholds))]
+    fns = [0 for i in range(len(thresholds))]
+    tns = [0 for i in range(len(thresholds))]
+    tp_rates = [0 for i in range(len(thresholds))]
+    fp_rates = [0 for i in range(len(thresholds))]
+
+    for i in range(len(thresholds)):
+        thresh =  thresholds[i]
+        fps[i] = len(dataframe_neg[dataframe_neg[stat1]/(dataframe_neg[stat1]+dataframe_neg[stat2])>thresh])
+        tns[i] = len(dataframe_neg[dataframe_neg[stat1]/(dataframe_neg[stat1]+dataframe_neg[stat2])<=thresh])
+        fns[i] = len(dataframe_pos[dataframe_pos[stat1]/(dataframe_pos[stat1]+dataframe_pos[stat2])<=thresh])
+        tps[i] = len(dataframe_pos[dataframe_pos[stat1]/(dataframe_pos[stat1]+dataframe_pos[stat2])>thresh])
+        tp_rates[i] = float(tps[i])/(tps[i]+fns[i])
+        fp_rates[i] = float(fps[i])/(fps[i]+tns[i])
+    return [tp_rates, fp_rates]
+
 
 def get_tprate_fprate(dataframe_neg, dataframe_pos, stat, thresholds, negate=False):
     '''
@@ -227,7 +253,7 @@ def plot_ROC(stat2rates, out_path, title):
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
     plt.legend(statlist)
-    plt.savefig(opath.join(out_path, title+'.pdf'), format='pdf')
+    plt.savefig(opath.join(out_path, '_'.join(title.strip().split())+'.pdf'), format='pdf')
     plt.clf()
 
 
