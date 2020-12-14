@@ -130,7 +130,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
     stats = file.read()
     file.close()
-    stats = stats.strip().splitliines() 
+    stats = stats.strip().splitlines() 
 
 
 
