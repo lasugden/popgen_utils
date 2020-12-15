@@ -106,6 +106,9 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
                             if random.random()<0.05:
                                 actual_value = vals[i+1]
                                 imputed_value = float(vals[i]+vals[i+2])/2
+                                if stat == 'ihs':
+                                    actual_value = abs(vals[i+1])
+                                    imputed_value = float(abs(vals[i]+vals[i+2])/2)
                                 if stat in imputed_values.keys():
                                     actual_values[stat].append(actual_value)
                                     imputed_values[stat].append(imputed_value)
