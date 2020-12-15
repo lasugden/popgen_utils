@@ -91,7 +91,7 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
         sweep_df = pd.concat(df_list_sweeppos)
         linked_df = pd.concat(df_list_linked)
 
-        return neutral_df, sweep_df, linked_df
+        return neutral_df.sample(n=10000), sweep_df.sample(n=10000), linked_df.sample(n=10000)
 
 
 def get_score_thresholds(list_of_scores):
