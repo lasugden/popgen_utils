@@ -11,7 +11,8 @@ import os
 import os.path as opath
 import yaml
 import pandas as pd
-import scipy.stats.pearsonr as corr
+import scipy.stats as ss
+import random
 try:
     import importlib.resources as ilresources
 except ImportError:
@@ -52,14 +53,15 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
                 vals = df[stat].tolist()
                 for i in range(len(vals)-3):
                     if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
-                        actual_value = vals[i+1]
-                        imputed_value = float(vals[i]+vals[i+2])/2
-                        if stat in imputed_values.keys():
-                            actual_values[stat].append(actual_value)
-                            imputed_values[stat].append(imputed_value)
-                        else:
-                            actual_values[stat] = [actual_value]
-                            imputed_values[stat] = [imputed_value]
+                        if random.random()<0.05:
+                            actual_value = vals[i+1]
+                            imputed_value = float(vals[i]+vals[i+2])/2
+                            if stat in imputed_values.keys():
+                                actual_values[stat].append(actual_value)
+                                imputed_values[stat].append(imputed_value)
+                            else:
+                                actual_values[stat] = [actual_value]
+                                imputed_values[stat] = [imputed_value]
        
         for stat in imputed_values.keys():
 
@@ -69,7 +71,7 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
             plt.title(stat)
             plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_neutral.pdf'))
             plt.clf()
-            print(stat+' correlation: '+str(corr(actual_values[stat], imputed_values[stat])))
+            print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])[0]))
 
 
 def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path, data_path=None):
@@ -101,14 +103,15 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
                     vals = df[stat].tolist()
                     for i in range(len(vals)-3):
                         if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
-                            actual_value = vals[i+1]
-                            imputed_value = float(vals[i]+vals[i+2])/2
-                            if stat in imputed_values.keys():
-                                actual_values[stat].append(actual_value)
-                                imputed_values[stat].append(imputed_value)
-                            else:
-                                actual_vales[stat] = [actual_value]
-                                imputed_values[stat] = [imputed_value]
+                            if random.random()<0.05:
+                                actual_value = vals[i+1]
+                                imputed_value = float(vals[i]+vals[i+2])/2
+                                if stat in imputed_values.keys():
+                                    actual_values[stat].append(actual_value)
+                                    imputed_values[stat].append(imputed_value)
+                                else:
+                                    actual_vales[stat] = [actual_value]
+                                    imputed_values[stat] = [imputed_value]
            
             for stat in imputed_values.keys():
 
@@ -118,5 +121,5 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
                 plt.title(stat)
                 plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_sweep.pdf'))
                 plt.clf()
-                print(stat+' correlation: '+str(corr(actual_values[stat], imputed_values[stat])))
+                print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])))
 
