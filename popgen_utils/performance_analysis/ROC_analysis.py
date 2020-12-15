@@ -101,7 +101,7 @@ def get_score_thresholds(list_of_scores):
     returns: vector of 100 score thresholds (percentiles)
     '''
     scores = sorted(list_of_scores)
-    indices = [int((int(x)*len(scores)/100)) for x in range(1,100)]
+    indices = [int((int(x)*len(scores)/100)) for x in range(101)]
     #print(indices)
     return [scores[index] for index in indices]
 
@@ -137,29 +137,34 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
 
 
     #for each statistic (read in from swifr_train_path), collect scores for neutral/linked/sweep --> get_score_thresholds
-    stat2thresholds = {}
-    for stat in stats:
-        neutral_scores = neutral_df[stat].tolist()
-        sweep_scores = sweep_df[stat].tolist()
-        linked_scores = linked_df[stat].tolist()
+    # stat2thresholds = {}
+    # for stat in stats:
+    #     neutral_scores = neutral_df[stat].tolist()
+    #     sweep_scores = sweep_df[stat].tolist()
+    #     linked_scores = linked_df[stat].tolist()
 
-        stat2thresholds[stat] = get_score_thresholds(neutral_scores+sweep_scores+linked_scores)
-    neutral_psweep_aode = neutral_df['P(sweep)'].tolist()
-    sweep_psweep_aode = sweep_df['P(sweep)'].tolist()
-    linked_psweep_aode = linked_df['P(sweep)'].tolist()
-    neutral_pliinked_aode = neutral_df['P(linked)'].tolist()
-    linked_plinked_aode = neutral_df['P(linked)'].tolist()
-    stat2thresholds['P(sweep)'] = get_score_thresholds(neutral_psweep_aode+sweep_psweep_aode+linked_psweep_aode)
-    stat2thresholds['P(linked)'] = get_score_thresholds(neutral_pliinked_aode+linked_plinked_aode)
+    #     stat2thresholds[stat] = get_score_thresholds(neutral_scores+sweep_scores+linked_scores)
+    # neutral_psweep_aode = neutral_df['P(sweep)'].tolist()
+    # sweep_psweep_aode = sweep_df['P(sweep)'].tolist()
+    # linked_psweep_aode = linked_df['P(sweep)'].tolist()
+    # neutral_pliinked_aode = neutral_df['P(linked)'].tolist()
+    # linked_plinked_aode = neutral_df['P(linked)'].tolist()
+    # stat2thresholds['P(sweep)'] = get_score_thresholds(neutral_psweep_aode+sweep_psweep_aode+linked_psweep_aode)
+    # stat2thresholds['P(linked)'] = get_score_thresholds(neutral_pliinked_aode+linked_plinked_aode)
 
 
     #make ROC for sweep vs neutral
     stat2rates = {stat:[[],[]] for stat in stats}
     for stat in stats:
-        [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, stat2thresholds[stat])
+        if stat == 'ihs':
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, get_score_thresholds(neutral_df[stat].tolist()+sweep_df[stat].tolist()),negate=True)
+        else: 
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, get_score_thresholds(neutral_df[stat].tolist()+sweep_df[stat].tolist()))
         stat2rates[stat][0] = tp_rates
         stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, sweep_df, 'P(sweep)', 'P(neutral)', stat2thresholds['P(sweep)'])
+    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, sweep_df, 'P(sweep)', 'P(neutral)', get_score_thresholds(
+        (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
+        (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
     stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
     plot_ROC(stat2rates, out_path, title='Sweep v Neutral')
@@ -167,10 +172,15 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     #make ROC for sweep vs linked
     stat2rates = {stat:[[],[]] for stat in stats}
     for stat in stats:
-        [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, stat2thresholds[stat])
+        if stat == 'ihs':
+            [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()),negate=True)
+        else:
+            [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()))
         stat2rates[stat][0] = tp_rates
         stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df, sweep_df, 'P(sweep)', 'P(linked)', stat2thresholds['P(sweep)'])
+    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df, sweep_df, 'P(sweep)', 'P(linked)', get_score_thresholds(
+        linked_df['P(sweep)']/(linked_df['P(sweep)']+linked_df['P(linked)']).tolist()+
+        sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
     stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
     plot_ROC(stat2rates, out_path, title='Sweep v Linked')
@@ -178,10 +188,15 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     #make ROC for linked vs neutral
     stat2rates = {stat:[[],[]] for stat in stats}
     for stat in stats:
-        [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, stat2thresholds[stat])
+        if stat == 'ihs':
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, get_score_thresholds(neutral_df[stat].tolist()+linked_df[stat].tolist()),negate=True)
+        else:
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, get_score_thresholds(neutral_df[stat].tolist()+linked_df[stat].tolist()))
         stat2rates[stat][0] = tp_rates
         stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, linked_df, 'P(linked)', 'P(neutral)', stat2thresholds['P(linked)'])
+    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, linked_df, 'P(linked)', 'P(neutral)', get_score_thresholds(
+        neutral_df['P(linked)']/(neutral_df['P(linked)']+neutral_df['P(neutral)']).tolist()+
+        linked_df['P(linked)']/(linked_df['P(linked)']+linked_df['P(neutral)']).tolist()))
     stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
     plot_ROC(stat2rates, out_path, title='Linked v Neutral')
@@ -230,19 +245,35 @@ def get_tprate_fprate(dataframe_neg, dataframe_pos, stat, thresholds, negate=Fal
     tp_rates = [0 for i in range(len(thresholds))]
     fp_rates = [0 for i in range(len(thresholds))]
 
-    for i in range(len(thresholds)):
-        thresh = thresholds[i]
-        fps[i] = len(dataframe_neg[dataframe_neg[stat]>thresh])
-        tns[i] = len(dataframe_neg[dataframe_neg[stat]<=thresh])
-        fns[i] = len(dataframe_pos[dataframe_pos[stat]<=thresh])
-        tps[i] = len(dataframe_pos[dataframe_pos[stat]>thresh])
+    if negate == True:
+        for i in range(len(thresholds)):
+            thresh = thresholds[i]
+            fps[i] = len(dataframe_neg[dataframe_neg[stat]<thresh])
+            tns[i] = len(dataframe_neg[dataframe_neg[stat]>=thresh])
+            fns[i] = len(dataframe_pos[dataframe_pos[stat]>=thresh])
+            tps[i] = len(dataframe_pos[dataframe_pos[stat]<thresh])
 
-        if tps[i]+fns[i] !=0 and fps[i]+tns[i] != 0:
-            tp_rates[i] = float(tps[i])/(tps[i]+fns[i])
-            fp_rates[i] = float(fps[i])/(fps[i]+tns[i])
-        else:
-            tp_rates[i] = np.nan
-            fp_rates[i] = np.nan
+            if tps[i]+fns[i] !=0 and fps[i]+tns[i] != 0:
+                tp_rates[i] = float(tps[i])/(tps[i]+fns[i])
+                fp_rates[i] = float(fps[i])/(fps[i]+tns[i])
+            else:
+                tp_rates[i] = np.nan
+                fp_rates[i] = np.nan            
+
+    else:
+        for i in range(len(thresholds)):
+            thresh = thresholds[i]
+            fps[i] = len(dataframe_neg[dataframe_neg[stat]>thresh])
+            tns[i] = len(dataframe_neg[dataframe_neg[stat]<=thresh])
+            fns[i] = len(dataframe_pos[dataframe_pos[stat]<=thresh])
+            tps[i] = len(dataframe_pos[dataframe_pos[stat]>thresh])
+
+            if tps[i]+fns[i] !=0 and fps[i]+tns[i] != 0:
+                tp_rates[i] = float(tps[i])/(tps[i]+fns[i])
+                fp_rates[i] = float(fps[i])/(fps[i]+tns[i])
+            else:
+                tp_rates[i] = np.nan
+                fp_rates[i] = np.nan
 
     return [tp_rates, fp_rates]
 
