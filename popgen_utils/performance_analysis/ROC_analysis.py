@@ -100,8 +100,8 @@ def get_score_thresholds(list_of_scores):
 
     returns: vector of 100 score thresholds (percentiles)
     '''
-    scores = sorted(list_of_scores)
-    scores = [x for x in scores if np.isnan(x)==False]
+    scores = [x for x in list_of_scores if np.isnan(x)==False]
+    scores = sorted(scores)
     indices = [int((int(x)*len(scores)/100)) for x in range(100)]
     #print(indices)
     return [scores[index] for index in indices]
