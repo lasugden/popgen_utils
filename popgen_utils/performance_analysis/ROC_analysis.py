@@ -48,13 +48,13 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
         slim_model_path_sweep = opath.join(slim_path,model_name_sweep)
         #bash_path = opath.join(slim_model_path,'bash')
 
-        #extract classes in order -- NECESSARY?
+        #extract classes in order
         file = open(opath.join(slim_path,swifr_train_path,'classes.txt'))
         classes = file.read()
         file.close()
         classes = classes.strip().splitlines()
 
-        #extract component stats -- NECESSARY?
+        #extract component stats
         file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
         stats = file.read()
         file.close()
@@ -165,12 +165,12 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             #if stat == 'ihs':
                 #[tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs ,negate=True)
             #else: 
-            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs)
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df[stat], sweep_df[stat], stat, threshs)
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
 
 
-        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, sweep_df, 'P(sweep)', 'P(neutral)', get_score_thresholds(
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df['P(sweep)','P(neutral)'], sweep_df['P(sweep)','P(neutral)'], 'P(sweep)', 'P(neutral)', get_score_thresholds(
             (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
             (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
