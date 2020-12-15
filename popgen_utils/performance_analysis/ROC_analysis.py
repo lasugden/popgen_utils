@@ -170,7 +170,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             stat2rates[stat][1] = fp_rates
 
 
-        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df['P(sweep)','P(neutral)'], sweep_df[['P(sweep)','P(neutral)']], 'P(sweep)', 'P(neutral)', get_score_thresholds(
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df[['P(sweep)','P(neutral)']], sweep_df[['P(sweep)','P(neutral)']], 'P(sweep)', 'P(neutral)', get_score_thresholds(
             (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
             (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
@@ -187,7 +187,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()))
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
-        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df[['P(sweep)','P(linked)']], sweep_df['P(sweep)','P(linked)'], 'P(sweep)', 'P(linked)', get_score_thresholds(
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df[['P(sweep)','P(linked)']], sweep_df[['P(sweep)','P(linked)']], 'P(sweep)', 'P(linked)', get_score_thresholds(
             linked_df['P(sweep)']/(linked_df['P(sweep)']+linked_df['P(linked)']).tolist()+
             sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
