@@ -11,7 +11,7 @@ import os
 import os.path as opath
 import yaml
 import pandas as pd
-import scipy
+import scipy.stats.pearsonr as corr
 try:
     import importlib.resources as ilresources
 except ImportError:
@@ -69,7 +69,7 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
             plt.title(stat)
             plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_neutral.pdf'))
             plt.clf()
-            print(stat+' correlation: '+str(scipy.stats.pearsonr(actual_values[stat], imputed_values[stat])))
+            print(stat+' correlation: '+str(corr(actual_values[stat], imputed_values[stat])))
 
 
 def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path, data_path=None):
@@ -118,5 +118,5 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
                 plt.title(stat)
                 plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_sweep.pdf'))
                 plt.clf()
-                print(stat+' correlation: '+str(scipy.stats.pearsonr(actual_values[stat], imputed_values[stat])))
+                print(stat+' correlation: '+str(corr(actual_values[stat], imputed_values[stat])))
 
