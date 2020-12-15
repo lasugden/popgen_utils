@@ -156,12 +156,18 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     #make ROC for sweep vs neutral
     stat2rates = {stat:[[],[]] for stat in stats}
     for stat in stats:
+        threshs = get_score_thresholds(neutral_df[stat].tolist()+sweep_df[stat].tolist())
         if stat == 'ihs':
-            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, get_score_thresholds(neutral_df[stat].tolist()+sweep_df[stat].tolist()),negate=True)
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs ,negate=True)
         else: 
-            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, get_score_thresholds(neutral_df[stat].tolist()+sweep_df[stat].tolist()))
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs)
         stat2rates[stat][0] = tp_rates
         stat2rates[stat][1] = fp_rates
+        print(stat)
+        print(threshs)
+        print(tp_rates)
+        print(fp_rates)
+
     [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, sweep_df, 'P(sweep)', 'P(neutral)', get_score_thresholds(
         (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
         (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
@@ -289,6 +295,7 @@ def plot_ROC(stat2rates, out_path, title):
     for stat in stat2rates.keys():
         statlist.append(stat)
         color_index += 1
+        #false potitives on x-axis, true positives on y
         plt.plot(stat2rates[stat][1], stat2rates[stat][0], 'o-', color=colors2use[color_index], linewidth=2)
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
