@@ -165,7 +165,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             #if stat == 'ihs':
                 #[tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs ,negate=True)
             #else: 
-            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df[stat], sweep_df[stat], stat, threshs)
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs)
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
 
@@ -304,6 +304,7 @@ def plot_ROC(stat2rates, out_path, title):
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
     plt.legend(statlist)
+    plt.title(title)
     plt.savefig(opath.join(out_path, '_'.join(title.strip().split())+'.pdf'), format='pdf')
     plt.clf()
 
