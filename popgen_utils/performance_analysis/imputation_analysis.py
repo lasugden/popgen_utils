@@ -30,7 +30,7 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
     figure_out_path (str): where figure goes, relative to slim_path
     '''
     pops = ['p1','p2','p3']
-    refpops = [pop in pops if pop != pop_of_interest]
+    refpops = [pop for pop in pops if pop != pop_of_interest]
     if data_path is None:
         data_path = config.params()['paths']['data']
         base_path = opath.join(data_path, project_name)
@@ -75,7 +75,7 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
 def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path, data_path=None):
 
     pops = ['p1','p2','p3']
-    refpops = [pop in pops if pop != pop_of_interest]
+    refpops = [pop for pop in pops if pop != pop_of_interest]
 
     if data_path is None:
         data_path = config.params()['paths']['data']
