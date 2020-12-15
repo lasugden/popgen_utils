@@ -108,7 +108,8 @@ def get_score_thresholds(list_of_scores):
 
 
 
-def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, data_path=None):
+def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest,
+                    mode_neg, mode_pos, data_path=None):
     ''' 
     project_name (str): name of project #gives the path
     swifr_out_path (str): where classified files live (top directories should correspond to neutral and sweep sims; relative to shared data path)
@@ -117,6 +118,8 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     model_name_sweep (str): name of yaml file for sweep files
     sweep_pos (int) : position (1-indexed) of adaptive mutation
     pop_of_interest (str) : p1 e.g.
+    mode_neg (str): 'neutral' or 'linked'
+    mode_pos (str): 'linked' or 'sweep'; use with mode_neg to determine which analysis you do
     '''
 
     if data_path is None:
@@ -154,56 +157,59 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     # stat2thresholds['P(linked)'] = get_score_thresholds(neutral_pliinked_aode+linked_plinked_aode)
 
 
-    #make ROC for sweep vs neutral
-    stat2rates = {stat:[[],[]] for stat in stats}
-    for stat in stats:
-        threshs = get_score_thresholds(neutral_df[stat].tolist()+sweep_df[stat].tolist())
-        #if stat == 'ihs':
-            #[tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs ,negate=True)
-        #else: 
-        [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs)
-        stat2rates[stat][0] = tp_rates
-        stat2rates[stat][1] = fp_rates
+    if mode_neg == 'neutral' and mode_pos == 'sweep':
+        #make ROC for sweep vs neutral
+        stat2rates = {stat:[[],[]] for stat in stats}
+        for stat in stats:
+            threshs = get_score_thresholds(neutral_df[stat].tolist()+sweep_df[stat].tolist())
+            #if stat == 'ihs':
+                #[tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs ,negate=True)
+            #else: 
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs)
+            stat2rates[stat][0] = tp_rates
+            stat2rates[stat][1] = fp_rates
 
 
-    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, sweep_df, 'P(sweep)', 'P(neutral)', get_score_thresholds(
-        (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
-        (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
-    stat2rates['AODE'] = [aode_tprates, aode_fprates]
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, sweep_df, 'P(sweep)', 'P(neutral)', get_score_thresholds(
+            (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
+            (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
+        stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
-    plot_ROC(stat2rates, out_path, title='Sweep v Neutral')
+        plot_ROC(stat2rates, out_path, title='Sweep v Neutral')
 
-    #make ROC for sweep vs linked
-    stat2rates = {stat:[[],[]] for stat in stats}
-    for stat in stats:
-        #if stat == 'ihs':
-            #[tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()),negate=True)
-        #else:
-        [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()))
-        stat2rates[stat][0] = tp_rates
-        stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df, sweep_df, 'P(sweep)', 'P(linked)', get_score_thresholds(
-        linked_df['P(sweep)']/(linked_df['P(sweep)']+linked_df['P(linked)']).tolist()+
-        sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
-    stat2rates['AODE'] = [aode_tprates, aode_fprates]
+    elif mode_neg == 'linked' and mode_pos == 'sweep':
+        #make ROC for sweep vs linked
+        stat2rates = {stat:[[],[]] for stat in stats}
+        for stat in stats:
+            #if stat == 'ihs':
+                #[tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()),negate=True)
+            #else:
+            [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()))
+            stat2rates[stat][0] = tp_rates
+            stat2rates[stat][1] = fp_rates
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df, sweep_df, 'P(sweep)', 'P(linked)', get_score_thresholds(
+            linked_df['P(sweep)']/(linked_df['P(sweep)']+linked_df['P(linked)']).tolist()+
+            sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
+        stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
-    plot_ROC(stat2rates, out_path, title='Sweep v Linked')
+        plot_ROC(stat2rates, out_path, title='Sweep v Linked')
 
-    #make ROC for linked vs neutral
-    stat2rates = {stat:[[],[]] for stat in stats}
-    for stat in stats:
-        #if stat == 'ihs':
-            #[tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, get_score_thresholds(neutral_df[stat].tolist()+linked_df[stat].tolist()),negate=True)
-        #else:
-        [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, get_score_thresholds(neutral_df[stat].tolist()+linked_df[stat].tolist()))
-        stat2rates[stat][0] = tp_rates
-        stat2rates[stat][1] = fp_rates
-    [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, linked_df, 'P(linked)', 'P(neutral)', get_score_thresholds(
-        neutral_df['P(linked)']/(neutral_df['P(linked)']+neutral_df['P(neutral)']).tolist()+
-        linked_df['P(linked)']/(linked_df['P(linked)']+linked_df['P(neutral)']).tolist()))
-    stat2rates['AODE'] = [aode_tprates, aode_fprates]
+    elif mode_neg == 'neutral' and mode_pos == 'linked':
+        #make ROC for linked vs neutral
+        stat2rates = {stat:[[],[]] for stat in stats}
+        for stat in stats:
+            #if stat == 'ihs':
+                #[tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, get_score_thresholds(neutral_df[stat].tolist()+linked_df[stat].tolist()),negate=True)
+            #else:
+            [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, get_score_thresholds(neutral_df[stat].tolist()+linked_df[stat].tolist()))
+            stat2rates[stat][0] = tp_rates
+            stat2rates[stat][1] = fp_rates
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df, linked_df, 'P(linked)', 'P(neutral)', get_score_thresholds(
+            neutral_df['P(linked)']/(neutral_df['P(linked)']+neutral_df['P(neutral)']).tolist()+
+            linked_df['P(linked)']/(linked_df['P(linked)']+linked_df['P(neutral)']).tolist()))
+        stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
-    plot_ROC(stat2rates, out_path, title='Linked v Neutral')
+        plot_ROC(stat2rates, out_path, title='Linked v Neutral')
 
 def get_tprate_fprate_AODE(dataframe_neg, dataframe_pos, stat1, stat2, thresholds):
     '''
