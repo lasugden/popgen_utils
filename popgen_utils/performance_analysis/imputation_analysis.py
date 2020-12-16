@@ -50,10 +50,14 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
         df = pd.read_csv(allstats_file, header=0, delim_whitespace=True, na_values='-998')
         stats = df.columns[2:]
         for stat in stats:
+            if stat == 'ihs':
+                random_thresh=0.1
+            else:
+                random_thresh=0.01
             vals = df[stat].tolist()
             for i in range(len(vals)-3):
                 if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
-                    if random.random()<0.01:
+                    if random.random()<random_thresh:
                         actual_value = vals[i+1]
                         imputed_value = float(vals[i]+vals[i+2])/2
                         if stat in imputed_values.keys():
@@ -109,10 +113,14 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
             df = pd.read_csv(allstats_file, header=0, delim_whitespace=True, na_values='-998')
             stats = df.columns[2:]
             for stat in stats:
+                if stat == 'ihs':
+                    random_thresh=0.1
+                else:
+                    random_thresh=0.01
                 vals = df[stat].tolist()
                 for i in range(len(vals)-3):
                     if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
-                        if random.random()<0.001:
+                        if random.random()<random_thresh:
                             actual_value = vals[i+1]
                             imputed_value = float(vals[i]+vals[i+2])/2
                             if stat == 'ihs':
@@ -134,7 +142,7 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
         M_i = max(imputed_values[stat])
         m_i = min(imputed_values[stat])
         R_i = M_i-m_i
-        
+
         corr = ss.pearsonr(actual_values[stat], imputed_values[stat])[0]
         plt.plot(actual_values[stat], imputed_values[stat], 'o')
         plt.xlabel('Actual Statistic Value')
