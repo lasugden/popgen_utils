@@ -103,7 +103,7 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
                 vals = df[stat].tolist()
                 for i in range(len(vals)-3):
                     if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
-                        if random.random()<0.01:
+                        if random.random()<0.001:
                             actual_value = vals[i+1]
                             imputed_value = float(vals[i]+vals[i+2])/2
                             if stat == 'ihs':
