@@ -65,12 +65,19 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
    
     for stat in imputed_values.keys():
         corr = ss.pearsonr(actual_values[stat], imputed_values[stat])[0]
+        M_a = max(actual_values[stat])
+        m_a = min(actual_values[stat])
+        R_a = M_a-m_a
+
+        M_i = max(imputed_values[stat])
+        m_i = min(imputed_values[stat])
+        R_i = M_i-m_i
 
         plt.plot(actual_values[stat], imputed_values[stat], 'o')
         plt.xlabel('Actual Statistic Value')
         plt.ylabel('Imputed Statistic Value')
         plt.title(stat)
-        plt.text(.8*max(actual_values[stat]), .8*min(imputed_values[stat]), str(corr))
+        plt.text(M_a-.1*R_a, m_i+.1*R_i, str(corr))
         plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_neutral.pdf'))
         plt.clf()
         print(stat+' correlation: '+str(corr))
@@ -120,11 +127,20 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
        
     for stat in imputed_values.keys():
         corr = ss.pearsonr(actual_values[stat], imputed_values[stat])[0]
+        M_a = max(actual_values[stat])
+        m_a = min(actual_values[stat])
+        R_a = M_a-m_a
+
+        M_i = max(imputed_values[stat])
+        m_i = min(imputed_values[stat])
+        R_i = M_i-m_i
+        
+        corr = ss.pearsonr(actual_values[stat], imputed_values[stat])[0]
         plt.plot(actual_values[stat], imputed_values[stat], 'o')
         plt.xlabel('Actual Statistic Value')
         plt.ylabel('Imputed Statistic Value')
         plt.title(stat)
-        plt.text(.8*max(actual_values[stat]), .8*min(imputed_values[stat]), str(corr))
+        plt.text(M_a-.1*R_a, m_i+.1*R_i, str(corr))
         plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_sweep.pdf'))
         plt.clf()
         print(stat+' correlation: '+str(corr))
