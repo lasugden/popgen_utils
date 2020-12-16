@@ -38,40 +38,40 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
         slim_path = opath.join(base_path, 'slim')
         slim_model_path = opath.join(slim_path,model_name)
 
-        yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
-        params = yaml.load(yaml_file)
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    params = yaml.load(yaml_file)
 
-        imputed_values = {}
-        actual_values = {}
+    imputed_values = {}
+    actual_values = {}
 
-        for sim in range(int(params['sims'])):
-            parameter_model_name = (f'{model_name}_sim-{sim}')
-            allstats_file = opath.join(slim_model_path, parameter_model_name+'_'+pop_of_interest+'_'+''.join(refpops)+'_allstats.txt')
-            df = pd.read_csv(allstats_file, header=0, delim_whitespace=True, na_values='-998')
-            stats = df.columns[2:]
-            for stat in stats:
-                vals = df[stat].tolist()
-                for i in range(len(vals)-3):
-                    if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
-                        if random.random()<0.01:
-                            actual_value = vals[i+1]
-                            imputed_value = float(vals[i]+vals[i+2])/2
-                            if stat in imputed_values.keys():
-                                actual_values[stat].append(actual_value)
-                                imputed_values[stat].append(imputed_value)
-                            else:
-                                actual_values[stat] = [actual_value]
-                                imputed_values[stat] = [imputed_value]
-       
-        for stat in imputed_values.keys():
+    for sim in range(int(params['sims'])):
+        parameter_model_name = (f'{model_name}_sim-{sim}')
+        allstats_file = opath.join(slim_model_path, parameter_model_name+'_'+pop_of_interest+'_'+''.join(refpops)+'_allstats.txt')
+        df = pd.read_csv(allstats_file, header=0, delim_whitespace=True, na_values='-998')
+        stats = df.columns[2:]
+        for stat in stats:
+            vals = df[stat].tolist()
+            for i in range(len(vals)-3):
+                if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
+                    if random.random()<0.01:
+                        actual_value = vals[i+1]
+                        imputed_value = float(vals[i]+vals[i+2])/2
+                        if stat in imputed_values.keys():
+                            actual_values[stat].append(actual_value)
+                            imputed_values[stat].append(imputed_value)
+                        else:
+                            actual_values[stat] = [actual_value]
+                            imputed_values[stat] = [imputed_value]
+   
+    for stat in imputed_values.keys():
 
-            plt.plot(actual_values[stat], imputed_values[stat], 'o')
-            plt.xlabel('Actual Statistic Value')
-            plt.ylabel('Imputed Statistic Value')
-            plt.title(stat)
-            plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_neutral.pdf'))
-            plt.clf()
-            print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])[0]))
+        plt.plot(actual_values[stat], imputed_values[stat], 'o')
+        plt.xlabel('Actual Statistic Value')
+        plt.ylabel('Imputed Statistic Value')
+        plt.title(stat)
+        plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_neutral.pdf'))
+        plt.clf()
+        print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])[0]))
 
 
 def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path, data_path=None):
@@ -85,44 +85,44 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
         slim_path = opath.join(base_path, 'slim')
         slim_model_path = opath.join(slim_path,model_name)
 
-        yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
-        params = yaml.load(yaml_file)
+    yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
+    params = yaml.load(yaml_file)
 
-        imputed_values = {}
-        actual_values = {}
+    imputed_values = {}
+    actual_values = {}
 
-        for scoeff in params['selection_coefficient']:
-            for time in params['sweep_time']:
-                parameter_model_name = (f'{model_name}_coeff-{scoeff}_'
-                                            f'pop-{pop_of_interest}_start-{time}')
-                allstats_file = opath.join(slim_model_path, parameter_model_name+'_'+pop_of_interest+'_'+''.join(refpops)+'_allstats.txt')
+    for scoeff in params['selection_coefficient']:
+        for time in params['sweep_time']:
+            parameter_model_name = (f'{model_name}_coeff-{scoeff}_'
+                                        f'pop-{pop_of_interest}_start-{time}')
+            allstats_file = opath.join(slim_model_path, parameter_model_name+'_'+pop_of_interest+'_'+''.join(refpops)+'_allstats.txt')
 
-                df = pd.read_csv(allstats_file, header=0, delim_whitespace=True, na_values='-998')
-                stats = df.columns[2:]
-                for stat in stats:
-                    vals = df[stat].tolist()
-                    for i in range(len(vals)-3):
-                        if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
-                            if random.random()<0.01:
-                                actual_value = vals[i+1]
-                                imputed_value = float(vals[i]+vals[i+2])/2
-                                if stat == 'ihs':
-                                    actual_value = abs(vals[i+1])
-                                    imputed_value = float(abs(vals[i]+vals[i+2])/2)
-                                if stat in imputed_values.keys():
-                                    actual_values[stat].append(actual_value)
-                                    imputed_values[stat].append(imputed_value)
-                                else:
-                                    actual_values[stat] = [actual_value]
-                                    imputed_values[stat] = [imputed_value]
-           
-            for stat in imputed_values.keys():
+            df = pd.read_csv(allstats_file, header=0, delim_whitespace=True, na_values='-998')
+            stats = df.columns[2:]
+            for stat in stats:
+                vals = df[stat].tolist()
+                for i in range(len(vals)-3):
+                    if np.isnan(vals[i])==False and np.isnan(vals[i+1])==False and np.isnan(vals[i+2])==False:
+                        if random.random()<0.01:
+                            actual_value = vals[i+1]
+                            imputed_value = float(vals[i]+vals[i+2])/2
+                            if stat == 'ihs':
+                                actual_value = abs(vals[i+1])
+                                imputed_value = float(abs(vals[i]+vals[i+2])/2)
+                            if stat in imputed_values.keys():
+                                actual_values[stat].append(actual_value)
+                                imputed_values[stat].append(imputed_value)
+                            else:
+                                actual_values[stat] = [actual_value]
+                                imputed_values[stat] = [imputed_value]
+       
+    for stat in imputed_values.keys():
 
-                plt.plot(actual_values[stat], imputed_values[stat], 'o')
-                plt.xlabel('Actual Statistic Value')
-                plt.ylabel('Imputed Statistic Value')
-                plt.title(stat)
-                plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_sweep.pdf'))
-                plt.clf()
-                print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])))
+        plt.plot(actual_values[stat], imputed_values[stat], 'o')
+        plt.xlabel('Actual Statistic Value')
+        plt.ylabel('Imputed Statistic Value')
+        plt.title(stat)
+        plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_sweep.pdf'))
+        plt.clf()
+        print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])))
 
