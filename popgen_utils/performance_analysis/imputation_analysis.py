@@ -81,7 +81,7 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
         plt.xlabel('Actual Statistic Value')
         plt.ylabel('Imputed Statistic Value')
         plt.title(stat)
-        plt.text(M_a-.1*R_a, m_i+.1*R_i, str(corr))
+        plt.text(M_a-.1*R_a, m_i+.1*R_i, str(round(corr,2)))
         plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_neutral.pdf'))
         plt.clf()
         print(stat+' correlation: '+str(corr))
@@ -151,5 +151,5 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
         plt.text(M_a-.1*R_a, m_i+.1*R_i, str(corr))
         plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_sweep.pdf'))
         plt.clf()
-        print(stat+' correlation: '+str(corr))
+        print(stat+' correlation: '+str(round(corr,2)))
 
