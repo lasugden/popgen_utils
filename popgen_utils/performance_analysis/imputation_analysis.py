@@ -64,14 +64,16 @@ def read_files_neutral(project_name, model_name, pop_of_interest, figure_out_pat
                             imputed_values[stat] = [imputed_value]
    
     for stat in imputed_values.keys():
+        corr = ss.pearsonr(actual_values[stat], imputed_values[stat])[0]
 
         plt.plot(actual_values[stat], imputed_values[stat], 'o')
         plt.xlabel('Actual Statistic Value')
         plt.ylabel('Imputed Statistic Value')
         plt.title(stat)
+        plt.text(.8*max(actual_values[stat]), .8*min(imputed_values[stat]), str(corr))
         plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_neutral.pdf'))
         plt.clf()
-        print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])[0]))
+        print(stat+' correlation: '+str(corr))
 
 
 def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path, data_path=None):
@@ -117,12 +119,13 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
                                 imputed_values[stat] = [imputed_value]
        
     for stat in imputed_values.keys():
-
+        corr = ss.pearsonr(actual_values[stat], imputed_values[stat])[0]
         plt.plot(actual_values[stat], imputed_values[stat], 'o')
         plt.xlabel('Actual Statistic Value')
         plt.ylabel('Imputed Statistic Value')
         plt.title(stat)
+        plt.text(.8*max(actual_values[stat]), .8*min(imputed_values[stat]), str(corr))
         plt.savefig(opath.join(slim_path, figure_out_path,'imputation_'+stat+'_sweep.pdf'))
         plt.clf()
-        print(stat+' correlation: '+str(ss.pearsonr(actual_values[stat], imputed_values[stat])))
+        print(stat+' correlation: '+str(corr))
 
