@@ -113,7 +113,7 @@ def read_files_sweep(project_name, model_name, pop_of_interest, figure_out_path,
                                     actual_values[stat].append(actual_value)
                                     imputed_values[stat].append(imputed_value)
                                 else:
-                                    actual_vales[stat] = [actual_value]
+                                    actual_values[stat] = [actual_value]
                                     imputed_values[stat] = [imputed_value]
            
             for stat in imputed_values.keys():
