@@ -164,7 +164,10 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     # linked_plinked_aode = neutral_df['P(linked)'].tolist()
     # stat2thresholds['P(sweep)'] = get_score_thresholds(neutral_psweep_aode+sweep_psweep_aode+linked_psweep_aode)
     # stat2thresholds['P(linked)'] = get_score_thresholds(neutral_pliinked_aode+linked_plinked_aode)
-
+    if all_defined:
+        title_addon = ' All Statistics Defined'
+    else:
+        title_addon = ''
 
     if mode_neg == 'neutral' and mode_pos == 'sweep':
         #make ROC for sweep vs neutral
@@ -184,7 +187,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
-        plot_ROC(stat2rates, out_path, title='Sweep v Neutral')
+        plot_ROC(stat2rates, out_path, title='Sweep v Neutral'+title_addon)
 
     elif mode_neg == 'linked' and mode_pos == 'sweep':
         #make ROC for sweep vs linked
@@ -201,7 +204,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
-        plot_ROC(stat2rates, out_path, title='Sweep v Linked')
+        plot_ROC(stat2rates, out_path, title='Sweep v Linked'+title_addon)
 
     elif mode_neg == 'neutral' and mode_pos == 'linked':
         #make ROC for linked vs neutral
@@ -218,7 +221,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             linked_df['P(linked)']/(linked_df['P(linked)']+linked_df['P(neutral)']).tolist()))
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
-        plot_ROC(stat2rates, out_path, title='Linked v Neutral')
+        plot_ROC(stat2rates, out_path, title='Linked v Neutral'+title_addon)
 
 def get_tprate_fprate_AODE(dataframe_neg, dataframe_pos, stat1, stat2, thresholds):
     '''
