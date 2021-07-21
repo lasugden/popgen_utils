@@ -28,7 +28,7 @@ except ImportError:
 #   df = df[names2use]
 #   return df
 
-def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, data_path=None):
+def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, all_defined=False, data_path=None):
     '''
     project_name (str): name of project #gives the path
     swifr_out_path (str): where classified files live (top directories should correspond to neutral and sweep sims; relative to shared data path)
@@ -38,6 +38,7 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
     sweep_pos (int) : position (1-indexed) of adaptive mutation
     pop_of_interest (str) : p1 e.g.
     '''
+
 
     #pops = ['p1','p2','p3']
     if data_path is None:
@@ -91,6 +92,14 @@ def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, mo
         sweep_df = pd.concat(df_list_sweeppos)
         linked_df = pd.concat(df_list_linked)
 
+        #remove lines where not all statistics are defined
+        if all_defined:
+            #check for nan in each statistic column
+            neutral_df.dropna(axis=0, how='any', subset=stats, inplace=True)
+            sweep_df.dropna(axis=0, how='any', subset=stats, inplace=True)
+            linked_df.dropna(axis=0, how='any', subset=stats, inplace=True)
+
+
         return neutral_df.sample(n=10000), sweep_df, linked_df.sample(n=10000)
 
 
@@ -109,7 +118,7 @@ def get_score_thresholds(list_of_scores):
 
 
 def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest,
-                    mode_neg, mode_pos, data_path=None):
+                    mode_neg, mode_pos, all_defined=False, data_path=None):
     ''' 
     project_name (str): name of project #gives the path
     swifr_out_path (str): where classified files live (top directories should correspond to neutral and sweep sims; relative to shared data path)
@@ -131,7 +140,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
 
     #read_classified_files_all
     [neutral_df, sweep_df, linked_df] = read_classified_files_all(project_name, 
-        swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest)
+        swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, all_defined)
         
     file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
     stats = file.read()
