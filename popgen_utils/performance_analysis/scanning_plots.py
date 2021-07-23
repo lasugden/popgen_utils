@@ -110,7 +110,7 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
         lowerlimit = binlength*i
         upperlimit = binlength*(i+1)
         df_bin = df.loc[(df['pos']>lowerlimit) & (df['pos']<upperlimit)]
-        df_bin = df_bin.dropna(axis=0, subset=[stat])
+        df_bin.dropna(axis=0, subset=[stat], inplace=True)
         flankingvals.append(sorted(df_bin[stat].tolist()))
 
     #look at 1st, 25th, 50th, 75th, 99th percentile
@@ -123,6 +123,7 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
 
     #left flanking first:
     for i in range(int(numbins/2)):
+        print(i)
         percentile_1.append(flankingvals[i][math.floor(.01*len(flankingvals[i]))])
         percentile_25.append(flankingvals[i][math.floor(.25*len(flankingvals[i]))])
         percentile_50.append(flankingvals[i][math.floor(.5*len(flankingvals[i]))])
