@@ -112,7 +112,7 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
 
 
     #left flanking first:
-    for i in range(numbins/2):
+    for i in range(int(numbins/2)):
         percentile_1.append(flankingvals[i][math.floor(.01*length(flankingvals[i]))])
         percentile_25.append(flankingvals[i][math.floor(.25*length(flankingvals[i]))])
         percentile_50.append(flankingvals[i][math.floor(.5*length(flankingvals[i]))])
@@ -125,7 +125,7 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
     percentile_75.append(sweepvals[math.floor(.75*length(sweepvals))])
     percentile_99.append(sweepvals[math.floor(.99*length(sweepvals))])
     #right flanking:
-    for i in range(numbins/2, numbins):
+    for i in range(int(numbins/2), numbins):
         percentile_1.append(flankingvals[i][math.floor(.01*length(flankingvals[i]))])
         percentile_25.append(flankingvals[i][math.floor(.25*length(flankingvals[i]))])
         percentile_50.append(flankingvals[i][math.floor(.5*length(flankingvals[i]))])
@@ -135,12 +135,12 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
     #values for the x-axis
 
     #left flanking
-    for i in range(numbins/2):
+    for i in range(int(numbins/2)):
         lowerlimit = binlength*i
         upperlimit = binlength*(i+1)
         x_axis_values.append((lowerlimit+upperlimit)/2)
     x_axis_values.append(sweep_pos)
-    for i in range(numbins/2, numbins):
+    for i in range(int(numbins/2), numbins):
         lowerlimit = binlength*i
         upperlimit = binlength*(i+1)
         x_axis_values.appennd((lowerlimit+upperlimit)/2)
