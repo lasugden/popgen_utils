@@ -32,6 +32,14 @@ def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutra
     file.close()
     stats = stats.strip().splitlines()
 
+    file = open(opath.join(slim_path,swifr_train_path,'classes.txt'))
+    classes = file.read()
+    file.close()
+    classes = classes.strip().splitlines()
+
+    for cl in classes:
+        stats.append('P('+cl+')')
+
     df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, data_path)
     for stat in stats:
         figure_outpath = os.path.join(slim_path, swifr_out_path)
@@ -90,6 +98,7 @@ def read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutra
 def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, numbins):
     #note: assumes sweep_pos is in the middle of the simulated region
     sweepvals = df.loc[df['pos'] == sweep_pos]
+    sweepvals = sweepvals.dropna(axis=0, subset=[stat])
     sweepvals = sorted(sweepvals[stat].tolist())
     
     flankingdf = df.loc[df['pos'] != sweep_pos]
@@ -101,6 +110,7 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
         lowerlimit = binlength*i
         upperlimit = binlength*(i+1)
         df_bin = df.loc[(df['pos']>lowerlimit) & (df['pos']<upperlimit)]
+        df_bin = df_bin.dropna(axis=0, subset=[stat])
         flankingvals.append(sorted(df_bin[stat].tolist()))
 
     #look at 1st, 25th, 50th, 75th, 99th percentile
@@ -145,11 +155,11 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
         upperlimit = binlength*(i+1)
         x_axis_values.append((lowerlimit+upperlimit)/2)
 
-    plt.plot(x_axis_values, percentile_1, 'g-')
-    plt.plot(x_axis_values, percentile_25, 'p-')
+    plt.plot(x_axis_values, percentile_1, 'b-')
+    plt.plot(x_axis_values, percentile_25, 'r-')
     plt.plot(x_axis_values, percentile_50, 'k-')
-    plt.plot(x_axis_values, percentile_75, 'p-')
-    plt.plot(x_axis_values, percentile_99, 'g-')
+    plt.plot(x_axis_values, percentile_75, 'r-')
+    plt.plot(x_axis_values, percentile_99, 'b-')
     plt.xlabel('Position in Simulated Genome Region')
     plt.ylabel(stat)
     plt.savefig(os.path.join(figure_outpath, figure_title+'.pdf'), bbox_inches='tight')
