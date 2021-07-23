@@ -143,7 +143,7 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
     for i in range(int(numbins/2), numbins):
         lowerlimit = binlength*i
         upperlimit = binlength*(i+1)
-        x_axis_values.appennd((lowerlimit+upperlimit)/2)
+        x_axis_values.append((lowerlimit+upperlimit)/2)
 
     plt.plot(x_axis_values, percentile_1, 'g-')
     plt.plot(x_axis_values, percentile_25, 'p-')
