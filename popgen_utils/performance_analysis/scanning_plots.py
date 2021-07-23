@@ -42,7 +42,7 @@ def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutra
 
 def read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, data_path=None):
 
-	if data_path is None:
+    if data_path is None:
         data_path = config.params()['paths']['data']
     base_path = opath.join(data_path, project_name)
     slim_path = opath.join(base_path, 'slim')
