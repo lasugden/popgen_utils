@@ -33,7 +33,7 @@ def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutra
     stats = stats.strip().splitlines()
 
     df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, data_path)
-    for stat in stat:
+    for stat in stats:
         figure_outpath = os.path.join(slim_path, swifr_out_path)
         figure_title = stat+'_peakplot'
         make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, numbins)
