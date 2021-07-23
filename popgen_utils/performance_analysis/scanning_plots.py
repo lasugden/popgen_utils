@@ -133,7 +133,7 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
         percentile_99.append(flankingvals[i][math.floor(.99*len(flankingvals[i]))])
 
     #values for the x-axis
-
+    x_axis_values = []
     #left flanking
     for i in range(int(numbins/2)):
         lowerlimit = binlength*i
