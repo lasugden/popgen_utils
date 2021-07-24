@@ -125,11 +125,18 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
     #left flanking first:
     for i in range(int(numbins/2)):
         print(i)
-        percentile_1.append(flankingvals[i][math.floor(.01*len(flankingvals[i]))])
-        percentile_25.append(flankingvals[i][math.floor(.25*len(flankingvals[i]))])
-        percentile_50.append(flankingvals[i][math.floor(.5*len(flankingvals[i]))])
-        percentile_75.append(flankingvals[i][math.floor(.75*len(flankingvals[i]))])
-        percentile_99.append(flankingvals[i][math.floor(.99*len(flankingvals[i]))])
+        if len(flankingvals[i]) > 0:
+            percentile_1.append(flankingvals[i][math.floor(.01*len(flankingvals[i]))])
+            percentile_25.append(flankingvals[i][math.floor(.25*len(flankingvals[i]))])
+            percentile_50.append(flankingvals[i][math.floor(.5*len(flankingvals[i]))])
+            percentile_75.append(flankingvals[i][math.floor(.75*len(flankingvals[i]))])
+            percentile_99.append(flankingvals[i][math.floor(.99*len(flankingvals[i]))])
+        else:
+            percentile_1.append(np.nan)
+            percentile_25.append(np.nan)
+            percentile_50.append(np.nan)
+            percentile_75.append(np.nan)
+            percentile_99.append(np.nan)            
     #middle
     percentile_1.append(sweepvals[math.floor(.01*len(sweepvals))])
     percentile_25.append(sweepvals[math.floor(.25*len(sweepvals))])
@@ -138,11 +145,19 @@ def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos,
     percentile_99.append(sweepvals[math.floor(.99*len(sweepvals))])
     #right flanking:
     for i in range(int(numbins/2), numbins):
-        percentile_1.append(flankingvals[i][math.floor(.01*len(flankingvals[i]))])
-        percentile_25.append(flankingvals[i][math.floor(.25*len(flankingvals[i]))])
-        percentile_50.append(flankingvals[i][math.floor(.5*len(flankingvals[i]))])
-        percentile_75.append(flankingvals[i][math.floor(.75*len(flankingvals[i]))])
-        percentile_99.append(flankingvals[i][math.floor(.99*len(flankingvals[i]))])
+        if len(flankingvals[i]) > 0:
+            percentile_1.append(flankingvals[i][math.floor(.01*len(flankingvals[i]))])
+            percentile_25.append(flankingvals[i][math.floor(.25*len(flankingvals[i]))])
+            percentile_50.append(flankingvals[i][math.floor(.5*len(flankingvals[i]))])
+            percentile_75.append(flankingvals[i][math.floor(.75*len(flankingvals[i]))])
+            percentile_99.append(flankingvals[i][math.floor(.99*len(flankingvals[i]))])
+        else:
+            percentile_1.append(np.nan)
+            percentile_25.append(np.nan)
+            percentile_50.append(np.nan)
+            percentile_75.append(np.nan)
+            percentile_99.append(np.nan) 
+
 
     #values for the x-axis
     x_axis_values = []
