@@ -150,7 +150,8 @@ def make_boxplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, 
     plt.ylabel(stat)
     plt.setp(bp['fliers'],markersize=2.5,alpha=0.3)
     plt.savefig(os.path.join(figure_outpath, figure_title+'.pdf'), bbox_inches='tight')
-    plt.clf()    
+    plt.clf()
+    plt.close()
 
 def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, numbins):
     #note: assumes sweep_pos is in the middle of the simulated region
