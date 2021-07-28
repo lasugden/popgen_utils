@@ -44,8 +44,10 @@ def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutra
     for stat in stats:
         print(stat)
         figure_outpath = os.path.join(slim_path, swifr_out_path)
-        figure_title = stat+'_peakplot'
-        make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, numbins)
+        figure_title1 = stat+'_peakplot'
+        figure_title2 = stat+'_boxplot'
+        make_peakplot(df, stat, figure_outpath, figure_title1, sim_length, sweep_pos, numbins)
+        make_boxplot(df, stat, figure_outpath, figure_title2, sim_length, sweep_pos, numbins)
 
 
 
@@ -95,6 +97,60 @@ def read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutra
     df = pd.concat(df_list)
 
     return df
+
+def make_boxplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, numbins):
+    #note: assumes sweep_pos is in the middle of the simulated region
+    sweepvals = df.loc[df['pos'] == sweep_pos]
+    sweepvals = sweepvals.dropna(axis=0, subset=[stat])
+    sweepvals = sorted(sweepvals[stat].tolist())
+    
+    flankingdf = df.loc[df['pos'] != sweep_pos]
+    #create a list of dataframes for flanking in 20 bins
+    binlength = float(sim_length)/numbins
+    flankingvals = []
+
+    for i in range(numbins):
+        lowerlimit = binlength*i
+        upperlimit = binlength*(i+1)
+        df_bin = df.loc[(df['pos']>lowerlimit) & (df['pos']<upperlimit)]
+        df_bin.dropna(axis=0, subset=[stat], inplace=True)
+        flankingvals.append(sorted(df_bin[stat].tolist()))
+
+
+    stat_vals = []
+
+    #left flanking first:
+    for i in range(int(numbins/2)):
+        print(i)
+        stat_vals.append(flankingvals[i])
+        
+    #middle
+    stat_vals.append(sweepvals)
+
+    #right flanking:
+    for i in range(int(numbins/2), numbins):
+        stat_vals.append(flankingvals[i])
+
+
+    #values for the x-axis
+    x_axis_values = []
+    #left flanking
+    for i in range(int(numbins/2)):
+        lowerlimit = binlength*i
+        upperlimit = binlength*(i+1)
+        x_axis_values.append((lowerlimit+upperlimit)/2)
+    x_axis_values.append(sweep_pos)
+    for i in range(int(numbins/2), numbins):
+        lowerlimit = binlength*i
+        upperlimit = binlength*(i+1)
+        x_axis_values.append((lowerlimit+upperlimit)/2)
+
+    bp = plt.boxplot(stat_vals,notch=0,sym='.b')
+    plt.xlabel('Position in Simulated Genome Region')
+    plt.ylabel(stat)
+    plt.setp(bp['fliers'],markersize=2.5,alpha=0.3)
+    plt.savefig(os.path.join(figure_outpath, figure_title+'.pdf'), bbox_inches='tight')
+    plt.clf()    
 
 def make_peakplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, numbins):
     #note: assumes sweep_pos is in the middle of the simulated region
