@@ -145,10 +145,10 @@ def make_boxplot(df, stat, figure_outpath, figure_title, sim_length, sweep_pos, 
         upperlimit = binlength*(i+1)
         x_axis_values.append((lowerlimit+upperlimit)/2)
 
-    bp = plt.boxplot(stat_vals,notch=0,sym='.b')
+    bp = plt.boxplot(stat_vals, notch=True, sym='') #do not show outliers
     plt.xlabel('Position in Simulated Genome Region')
     plt.ylabel(stat)
-    plt.setp(bp['fliers'],markersize=2.5,alpha=0.3)
+    #plt.setp(bp['fliers'], markersize=2.5, alpha=0.3)
     plt.savefig(os.path.join(figure_outpath, figure_title+'.pdf'), bbox_inches='tight')
     plt.clf()
     plt.close()
