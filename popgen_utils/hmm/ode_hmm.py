@@ -23,7 +23,7 @@ class Mix1D():
     def __init__(self):
         self.means_ = []
         self.weights_ = []
-        self.covars_ = []
+        self.covariances_ = []
 
 class ODE_HMM:
     '''
@@ -460,7 +460,7 @@ class ODE_HMM:
     def GMM_pdf(self,G,x):
         w = G.weights_
         mu = G.means_
-        C = G.covars_
+        C = G.covariances_
         pdf = 0
         for i in range(len(w)):
             pdf += w[i]*self.normpdf(x,mu[i][0],math.sqrt(C[i][0]))
@@ -477,20 +477,20 @@ class ODE_HMM:
         H = Mix1D()
 
         for i in range(len(G.weights_)):
-            sigma1 = math.sqrt(G.covars_[i][0][0])
-            sigma2 = math.sqrt(G.covars_[i][1][1])
-            ro = float(G.covars_[i][0][1])/(sigma1*sigma2)
+            sigma1 = math.sqrt(G.covariances_[i][0][0])
+            sigma2 = math.sqrt(G.covariances_[i][1][1])
+            ro = float(G.covariances_[i][0][1])/(sigma1*sigma2)
             mu1 = G.means_[i][0]
             mu2 = G.means_[i][1]
             if keystat == 1:
                 H.weights_.append(G.weights_[i])
                 H.means_.append([mu1 + float(sigma1*ro*(condval-mu2))/sigma2])
-                H.covars_.append([(1-ro**2)*sigma1**2])
+                H.covariances_.append([(1-ro**2)*sigma1**2])
 
             elif keystat == 2:
                 H.weights_.append(G.weights_[i])
                 H.means_.append([mu2 + float(sigma2*ro*(condval-mu1))/sigma1])
-                H.covars_.append([(1-ro**2)*sigma2**2])
+                H.covariances_.append([(1-ro**2)*sigma2**2])
         return H
 
     def gmm_fit(self,stat1,stat2,scenario):
