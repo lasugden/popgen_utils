@@ -36,11 +36,11 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
     pops = ['p1','p2','p3']
     if data_path is None:
         data_path = config.params()['paths']['data']
-        base_path = opath.join(data_path, project_name)
-        slim_path = opath.join(base_path, 'slim')
-        slim_model_path = opath.join(slim_path, model_name)
-        bash_path = opath.join(slim_model_path,'bash')
-        output_path = opath.join(slim_path, out_path)
+    base_path = opath.join(data_path, project_name)
+    slim_path = opath.join(base_path, 'slim')
+    slim_model_path = opath.join(slim_path, model_name)
+    bash_path = opath.join(slim_model_path,'bash')
+    output_path = opath.join(slim_path, out_path)
 
     yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
     params = yaml.load(yaml_file)
@@ -59,8 +59,8 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
                 allstats_file = opath.join(slim_model_path, 
                     parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
                 [positions, Svec] = HMM.read_Svec(allstats_file)
-                HMM.viterbi(Svec, positions, out_path, parameter_model_name, plotpaths=True, classify=True) 
-                HMM.many_backtraces(Svec, 1000, positions, out_path, parameter_model_name, plotpaths=True, plotdensity=True, classify=True, plot_classify=True)
+                HMM.viterbi(Svec, positions, output_path, parameter_model_name, plotpaths=True, classify=True) 
+                HMM.many_backtraces(Svec, 1000, positions, output_path, parameter_model_name, plotpaths=True, plotdensity=True, classify=True, plot_classify=True)
 
     elif type == 'neutral':
         for sim in range(int(params['sims'])):
@@ -69,8 +69,8 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
             allstats_file = opath.join(slim_model_path, 
                 parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
             [positions, Svec] = HMM.read_Svec(allstats_file)
-            HMM.viterbi(Svec, positions, out_path, parameter_model_name, plotpaths=True, classify=True)
-            HMM.many_backtraces(Svec, 1000, positions, out_path, parameter_model_name, plotpaths=True, plotdensity=True, classify=True, plot_classify=True)
+            HMM.viterbi(Svec, positions, output_path, parameter_model_name, plotpaths=True, classify=True)
+            HMM.many_backtraces(Svec, 1000, positions, output_path, parameter_model_name, plotpaths=True, plotdensity=True, classify=True, plot_classify=True)
 
 
 
