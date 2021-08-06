@@ -368,9 +368,8 @@ class ODE_HMM:
         df = pd.read_csv(datafile, delim_whitespace=True, header=0, na_values=-998)
         positions = df['pos']
         Svec = []
-        for pos in positions:
+        for i, row in df.iterrows():
             S = Stats(self.path2trained)
-            row = df.loc[df['pos'] == pos]
             for stat in S.stats:
                 S.set_stat(stat, float(row[stat]))
             Svec.append(S)
@@ -422,7 +421,7 @@ class ODE_HMM:
     def ode_likelihood(self,keystat,stats,scenario,imputation_mode='ode_compensation'): #adapted from ode function in SWIFr.py to only return likelihood for a single classification scenario
         score = stats.stat2score[keystat]
         print(score)
-        if score == np.nan:
+        if np.isnan(score):
             return 'n/a'
         else:
             Likelihood_list = []
@@ -436,7 +435,7 @@ class ODE_HMM:
             for stat in self.statlist:
                 if stat != keystat:
                     score2 = stats.stat2score[stat]
-                    if score2 == np.nan:
+                    if np.isnan(score2):
                         stats_undefined += 1
                     else:
                         if self.stat2num[keystat] < self.stat2num[stat]:
