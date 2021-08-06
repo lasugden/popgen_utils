@@ -133,7 +133,7 @@ class ODE_HMM:
             out.write('pos\tstate\n')
             for i in range(len(Svec)):
                 position = positions[i]
-                out.write('\t'.join(str(position), state_path[i])+'\n')
+                out.write('\t'.join([str(position), str(state_path[i])])+'\n')
             out.close()
     
 
@@ -321,7 +321,7 @@ class ODE_HMM:
                 n_prop_vec.append(n_prop)
                 l_prop_vec.append(l_prop)
                 s_prop_vec.append(s_prop)
-                out.write('\t'.join(str(position), n_prop, l_prop, s_prop)+'\n')
+                out.write('\t'.join([str(position), str(n_prop), str(l_prop), str(s_prop)])+'\n')
             out.close()
             if plot_classify:
                 p1 = plt.bar(range(len(n_prop_vec)), n_prop_vec, width=0.8, color='blue')
