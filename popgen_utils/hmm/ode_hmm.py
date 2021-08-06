@@ -26,17 +26,18 @@ class Mix1D():
 
 class ODE_HMM:
     '''
-    emissions use ODE terms -- imputation is done based on flanking nearby sites
+    emissions use ODE terms -- imputation is done based on "ode_compensation"
     '''
 
     def __init__(self, path2trained):
         self._initialize_AODE(path2trained)
+        self.forcesweep=True
         self.hmmstate2trainingstate = {'Neutral':'neutral','LinkedLeft':'linked','LinkedRight':'linked','Sweep':'sweep'}
         self.hmmstate2num = {'StartEnd':0,'Neutral':1,'LinkedLeft':2,'LinkedRight':3,'Sweep':4}
         self.num2hmmstate = {y:x for x,y in self.hmmstate2num.items()}
         self.hmmstates = self.hmmstate2num.keys()
         self.set_transitions()
-        self.forcesweep=True
+
 
     def set_transitions(self):
         self.transitions = [[0 for j in range(len(self.hmmstates))] for i in range(len(self.hmmstates))]
