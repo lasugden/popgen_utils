@@ -21,15 +21,15 @@ from popgen_utils.hmm.ode_hmm import Stats, Mix1D
 
 
 def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest,
-	swifr_trained_path, out_path, data_path=None):
-	'''
-	project_name (str): name of project (directory)
-	model_name (str): e.g. gravel_neutral_400kb
-	type (str): 'sweep' or 'neutral'
-	pop_of_interest (str): in the format 'pN' where N is integer in 1-3
-	swifr_trained_path (str): path where trained model lives
-	out_path (str): path for the output (relative path from common directory)
-	'''
+    swifr_trained_path, out_path, data_path=None):
+    '''
+    project_name (str): name of project (directory)
+    model_name (str): e.g. gravel_neutral_400kb
+    type (str): 'sweep' or 'neutral'
+    pop_of_interest (str): in the format 'pN' where N is integer in 1-3
+    swifr_trained_path (str): path where trained model lives
+    out_path (str): path for the output (relative path from common directory)
+    '''
 
     #make out path if it doesn't exist
     os.system('mkdir -p '+out_path)
@@ -50,9 +50,9 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
 
 
     if type == 'sweep':
-    	for scoeff in params['selection_coefficient']:
-    		for time in params['sweep_time']:
-    			pops_reference = [x for x in pops if x != pop_of_interest]
+        for scoeff in params['selection_coefficient']:
+            for time in params['sweep_time']:
+                pops_reference = [x for x in pops if x != pop_of_interest]
                 parameter_model_name = (f'{model_name}_coeff-{scoeff}_'
                                             f'pop-{pop_of_interest}_start-{time}')
                 allstats_file = opath.join(slim_model_path, 
