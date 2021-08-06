@@ -36,6 +36,7 @@ class ODE_HMM:
         self.num2hmmstate = {y:x for x,y in self.hmmstate2num.items()}
         self.hmmstates = self.hmmstate2num.keys()
         self.set_transitions()
+        self.forcesweep=True
 
     def set_transitions(self):
         self.transitions = [[0 for j in range(len(self.hmmstates))] for i in range(len(self.hmmstates))]
