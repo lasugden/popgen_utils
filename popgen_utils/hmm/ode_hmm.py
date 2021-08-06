@@ -372,7 +372,7 @@ class ODE_HMM:
             S = Stats(self.path2trained)
             row = df.loc[df['pos'] == pos]
             for stat in S.stats:
-                S.set_stat(stat, row[stat])
+                S.set_stat(stat, float(row[stat]))
             Svec.append(S)
 
 
