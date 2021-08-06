@@ -91,7 +91,7 @@ class ODE_HMM:
         P[0][1] = 0 #pointer at position 0 and state Neutral (1) is to StartEnd (0)
         P[0][2] = 0 #pointer at position 0 and state LinkedLeft (2) is to StartEnd (0)
         
-        print 'Viterbi recursion...'
+        print('Viterbi recursion...')
         #recursion
         
         for i in range(1,len(Svec)):
@@ -143,7 +143,7 @@ class ODE_HMM:
         for state in self.hmmstates:
             if state != 'StartEnd' and self.transitions[self.hmmstate2num[state]][self.hmmstate2num['StartEnd']] != 0:
                 logV[len(Svec)-1][self.hmmstate2num[state]] = math.log(self.transitions[self.hmmstate2num[state]][self.hmmstate2num['StartEnd']])
-        print 'Backward recursion...'
+        print('Backward recursion...')
         for i in range(len(Svec)-2,-1,-1):
             for j in range(1,len(self.hmmstates)):
                 sumvec = []
@@ -159,18 +159,17 @@ class ODE_HMM:
                 #print jprime
                 Beginsumvec.append(logV[0][jprime]+math.log(self.transitions[0][jprime])+math.log(self.emission(self.num2hmmstate[jprime],Svec[0])[0]))
         BeginSum = self.logsumexp(Beginsumvec)
-        print BeginSum
+
 
         return logV
 
 
     def forward(self,Svec):
         logV = [['n/a' for x in self.hmmstates] for i in range(len(Svec)+1)]
-        print self.emission('Neutral',Svec[0])
         logV[0][1] = math.log(self.transitions[self.hmmstate2num['StartEnd']][self.hmmstate2num['Neutral']]) + math.log(self.emission('Neutral',Svec[0])[0])
         logV[0][2] = math.log(self.transitions[self.hmmstate2num['StartEnd']][self.hmmstate2num['LinkedLeft']]) + math.log(self.emission('LinkedLeft',Svec[0])[0])
 
-        print 'Forward recursion...'    
+        print('Forward recursion...')   
         for i in range(1,len(Svec)):
             for j in range(1,len(self.hmmstates)):
                 #Use: log(sum(exp(xn))) = a+log(sum(exp(xn-a))) where a=max_n(xn)               
@@ -186,7 +185,6 @@ class ODE_HMM:
             if logV[len(Svec)-1][jprime] != 'n/a' and self.transitions[jprime][0] != 0:
                 Endsumvec.append(logV[len(Svec)-1][jprime] + math.log(self.transitions[jprime][0]))
         EndSum = self.logsumexp(Endsumvec)
-        print EndSum
         logV[len(Svec)][0] = EndSum
         return logV                 
 
@@ -399,7 +397,7 @@ class ODE_HMM:
         f = file.read()
         file.close()
         self.scenarios = [x.strip() for x in f.strip().splitlines()]
-        print self.scenarios        
+        print(self.scenarios)        
 
         self.JOINTS = [[[] for stat2 in self.stat2num.keys()] for stat1 in self.stat2num.keys()]
         self.MARGINALS = [[] for stat in self.stat2num.keys()]
