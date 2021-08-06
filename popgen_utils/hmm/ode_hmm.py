@@ -304,7 +304,7 @@ class ODE_HMM:
 
         # at each position, count fraction assigned to neutral/linked/sweep
         if classify:
-            out = open(opath.join(outpath, outname+'_hmm_classified.txt'))
+            out = open(opath.join(outpath, outname+'_hmm_classified.txt'), 'w')
             out.write('pos\tP(neutral)\tP(linked)\tP(sweep)\n')
             n_prop_vec = []
             l_prop_vec = []
