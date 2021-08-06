@@ -129,7 +129,7 @@ class ODE_HMM:
             state_path[i] = P[i+1][state_path[i+1]]
 
         if classify:
-            out = open(opath.join(outpath, outname+'_viterbi_classified.txt'))
+            out = open(opath.join(outpath, outname+'_viterbi_classified.txt'), 'w')
             out.write('pos\tstate\n')
             for i in range(len(Svec)):
                 position = positions[i]
