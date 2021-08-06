@@ -335,15 +335,15 @@ class ODE_HMM:
 
 
 
-        # #concentrate on sweep state
-        # V = [State_path_counts[i][4] for i in range(len(Svec))]
-        # total = sum(V)
-        # numpaths = float(total)/N
-        # out = open(outpath+plotname+'_backtrace_density.txt','w')
-        # for i in range(len(Svec)):
-        #   if V[i] > 0:
-        #       out.write(str(positions[i])+'\t'+str(V[i])+'\n')
-        # out.close()
+        #concentrate on sweep state
+        V = [State_path_counts[i][4] for i in range(len(Svec))]
+        total = sum(V)
+        numpaths = float(total)/N
+        out = open(outpath+outname+'_backtrace_density.txt','w')
+        for i in range(len(Svec)):
+          if V[i] > 0:
+              out.write(str(positions[i])+'\t'+str(V[i])+'\n')
+        out.close()
         if plotdensity:
             plt.plot(positions,V,color='maroon')
             plt.figtext(0.7,0.7,str(int(sweeppercent*100))+"% of paths\nhave a sweep")
