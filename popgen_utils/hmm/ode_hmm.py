@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 import os, pickle, math, sys, random
+import os.path as opath
 import numpy as np
 from scipy.stats import norm
 import pandas as pd
@@ -421,7 +422,6 @@ class ODE_HMM:
 
     def ode_likelihood(self,keystat,stats,scenario,imputation_mode='ode_compensation'): #adapted from ode function in SWIFr.py to only return likelihood for a single classification scenario
         score = stats.stat2score[keystat]
-        print(score)
         if np.isnan(score):
             return 'n/a'
         else:
