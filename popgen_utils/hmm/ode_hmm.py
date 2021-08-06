@@ -415,7 +415,7 @@ class ODE_HMM:
             for scenario in self.scenarios:
                 self.MARGINALS[statnum1].append(self.gmm_fit_1D(stat1,scenario))
 
-    def ode_likelihood(self,keystat,stats,scenario,imputation_mode=ode_compensation): #adapted from ode function in SWIFr.py to only return likelihood for a single classification scenario
+    def ode_likelihood(self,keystat,stats,scenario,imputation_mode='ode_compensation'): #adapted from ode function in SWIFr.py to only return likelihood for a single classification scenario
         score = stats.stat2score[keystat]
         if score == np.nan:
             return 'n/a'
@@ -444,7 +444,7 @@ class ODE_HMM:
                             value = self.GMM_pdf(H,score2)
                             Likelihood = Likelihood*value
                             Likelihood_list.append(value)
-            if imputation_mode == ode_compensation:
+            if imputation_mode == 'ode_compensation':
                 #print Likelihood_list
                 n = stats_undefined
                 xbar = float(sum(Likelihood_list))/len(Likelihood_list) #average conditional density for defined comparison stats
