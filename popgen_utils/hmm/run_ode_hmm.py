@@ -32,7 +32,6 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
     '''
 
     #make out path if it doesn't exist
-    os.system('mkdir -p '+out_path)
 
     pops = ['p1','p2','p3']
     if data_path is None:
@@ -41,12 +40,14 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
         slim_path = opath.join(base_path, 'slim')
         slim_model_path = opath.join(slim_path, model_name)
         bash_path = opath.join(slim_model_path,'bash')
+        output_path = opath.join(slim_path, out_path)
 
     yaml_file = open(opath.join(slim_path,f'{model_name}.yaml'))
     params = yaml.load(yaml_file)
 
     path2trained = opath.join(slim_path, swifr_trained_path)
     HMM = ode_hmm.ODE_HMM(path2trained) #class ODE_HMM -- can use functions within
+    os.system('mkdir -p' + output_path)
 
 
     if type == 'sweep':

@@ -139,7 +139,7 @@ class ODE_HMM:
 
         if plotpaths:
             plt.plot(positions,state_path,'o-',mfc='Salmon',mec='none')
-            plt.savefig(outpath+outname+'_viterbi_path.pdf')
+            plt.savefig(opath.join(outpath,outname+'_viterbi_path.pdf'))
             plt.close()
 
     def backward(self,Svec):
@@ -339,7 +339,7 @@ class ODE_HMM:
         V = [State_path_counts[i][4] for i in range(len(Svec))]
         total = sum(V)
         numpaths = float(total)/N
-        out = open(outpath+outname+'_backtrace_density.txt','w')
+        out = open(opath.join(outpath, outname+'_backtrace_density.txt'),'w')
         for i in range(len(Svec)):
           if V[i] > 0:
               out.write(str(positions[i])+'\t'+str(V[i])+'\n')
@@ -349,7 +349,7 @@ class ODE_HMM:
             plt.figtext(0.7,0.7,str(int(sweeppercent*100))+"% of paths\nhave a sweep")
             plt.xlabel('Genomic Position')
             plt.ylabel('Number of Paths')
-            plt.savefig(outpath+outname+'_backtrace_density.pdf')
+            plt.savefig(opath.join(outpath, outname+'_backtrace_density.pdf'))
             plt.clf()
 
         return sweeppercent
