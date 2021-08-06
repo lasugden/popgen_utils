@@ -48,7 +48,8 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
     path2trained = opath.join(slim_path, swifr_trained_path)
     HMM = ode_hmm.ODE_HMM(path2trained) #class ODE_HMM -- can use functions within
     print('mkdir -p '+output_path)
-    os.system('mkdir -p' + output_path)
+    if not os.path.exists(output_path):
+        os.makedirs(output_path)
 
 
     if type == 'sweep':
