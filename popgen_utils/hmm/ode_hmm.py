@@ -3,6 +3,7 @@ import os, pickle, math, sys, random
 import numpy as np
 from scipy.stats import norm
 import pandas as pd
+from sklearn import mixture
 
 class Stats():
     def __init__(self,path):
