@@ -368,7 +368,7 @@ class ODE_HMM:
         df = pd.read_csv(datafile, delim_whitespace=True, header=0, na_values=-998)
         positions = df['pos']
         Svec = []
-        for pos in position:
+        for pos in positions:
             S = Stats(self.path2trained)
             row = df.loc[df['pos'] == pos]
             for stat in S.stats:
