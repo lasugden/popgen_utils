@@ -364,15 +364,18 @@ class ODE_HMM:
 
     def read_Svec(self,datafile):
         
-        S = Stats(self.path2trained)
+        #S = Stats(self.path2trained)
         df = pd.read_csv(datafile, delim_whitespace=True, header=0, na_values=-998)
         positions = df['pos']
         Svec = []
-        for row in df.iterrows():
-            statvec = []
+        for pos in position:
+            S = Stats(self.path2trained)
+            row = df.loc[df['pos']=pos]
             for stat in S.stats:
-                statvec.append(row[stat])
-            Svec.append(statvec)
+                value = row[stat]
+                S.set_stat(stat, value)
+            Svec.append(S)
+
 
         return [positions, Svec]
 
