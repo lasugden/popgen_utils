@@ -298,7 +298,7 @@ class ODE_HMM:
         sweeppercent = float(totalsweeps)/N
         
         if plotpaths:
-            plt.savefig(outpath+outname+'_backtrace_paths.pdf')
+            plt.savefig(opath.join(outpath, outname+'_backtrace_paths.pdf'))
             plt.clf()
 
 
