@@ -62,7 +62,8 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
                     parameter_model_name+'_%s_%s_allstats.txt' % (pop_of_interest, ''.join(pops_reference)))
                 [positions, Svec] = HMM.read_Svec(allstats_file)
                 if not opath.exists(opath.join(output_path, parameter_model_name+'_viterbi_classified.txt')):
-                    HMM.viterbi(Svec, positions, output_path, parameter_model_name, plotpaths=True, classify=True) 
+                    HMM.viterbi(Svec, positions, output_path, parameter_model_name, plotpaths=True, classify=True)
+                if not opath.exists(opath.join(output_path, parameter_model_name+'_hmm_classified.txt')):
                     HMM.many_backtraces(Svec, 1000, positions, output_path, parameter_model_name, plotpaths=True, plotdensity=True, classify=True, plot_classify=True)
 
     elif type == 'neutral':
@@ -74,6 +75,7 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
             [positions, Svec] = HMM.read_Svec(allstats_file)
             if not opath.exists(opath.join(output_path, parameter_model_name+'_viterbi_classified.txt')):
                 HMM.viterbi(Svec, positions, output_path, parameter_model_name, plotpaths=True, classify=True)
+            if not opath.exists(opath.join(output_path, parameter_model_name+'_hmm_classified.txt')):
                 HMM.many_backtraces(Svec, 1000, positions, output_path, parameter_model_name, plotpaths=True, plotdensity=True, classify=True, plot_classify=True)
 
 
