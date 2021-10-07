@@ -22,36 +22,49 @@ except ImportError:
         raise ImportError('Must install backport of importlib_resources if not using Python >= 3.7')
 
 
-def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, numbins=20, data_path=None):
+def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, numbins=20, with_hmm=False, hmm_out_path=None, data_path=None):
     if data_path is None:
         data_path = config.params()['paths']['data']
     base_path = opath.join(data_path, project_name)
     slim_path = opath.join(base_path, 'slim')
-    file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
-    stats = file.read()
-    file.close()
-    stats = stats.strip().splitlines()
+    
+    if with_hmm==False:
 
-    file = open(opath.join(slim_path,swifr_train_path,'classes.txt'))
-    classes = file.read()
-    file.close()
-    classes = classes.strip().splitlines()
+        file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
+        stats = file.read()
+        file.close()
+        stats = stats.strip().splitlines()
 
-    for cl in classes:
-        stats.append('P('+cl+')')
+        file = open(opath.join(slim_path,swifr_train_path,'classes.txt'))
+        classes = file.read()
+        file.close()
+        classes = classes.strip().splitlines()
 
-    df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, data_path)
-    for stat in stats:
-        print(stat)
-        figure_outpath = os.path.join(slim_path, swifr_out_path)
-        figure_title1 = stat+'_peakplot'
-        figure_title2 = stat+'_boxplot'
-        make_peakplot(df, stat, figure_outpath, figure_title1, sim_length, sweep_pos, numbins)
-        make_boxplot(df, stat, figure_outpath, figure_title2, sim_length, sweep_pos, numbins)
+        for cl in classes:
+            stats.append('P('+cl+')')
+
+        df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, data_path)
+        for stat in stats:
+            print(stat)
+            figure_outpath = os.path.join(slim_path, swifr_out_path)
+            figure_title1 = stat+'_peakplot'
+            figure_title2 = stat+'_boxplot'
+            make_peakplot(df, stat, figure_outpath, figure_title1, sim_length, sweep_pos, numbins)
+            make_boxplot(df, stat, figure_outpath, figure_title2, sim_length, sweep_pos, numbins)
+
+    else:
+        #read in hmm_classified files
+        df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, with_hmm=True, hmm_out_path)
+        figure_outpath = opath.join(slim_path, hmm_out_path)
+        figure_title1 = 'HMM_peakplot'
+        figure_title2 = 'HMM_boxplot'
+        classes = ['P(neutral)', 'P(linked)', 'P(sweep)']
+        for cl in classes:
+            make_peakplot(df, cl, figure_outpath, figure_title1, sim_length, sweep_pos, numbins)
+            make_boxplot(df, cl, figure_outpath, figure_title2, sim_length, sweep_pos, numbins)
 
 
-
-def read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, data_path=None):
+def read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, with_hmm=False, hmm_out_path=None, data_path=None):
 
     if data_path is None:
         data_path = config.params()['paths']['data']
@@ -80,12 +93,16 @@ def read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutra
     #read in all sweep files
     #df_list_sweeppos = []
     #df_list_linked = []
+    
     df_list = []
     for scoeff in params_sweep['selection_coefficient']:
         for time in params_sweep['sweep_time']:
             parameter_model_name = (f'{model_name_sweep}_coeff-{scoeff}_'
                                         f'pop-{pop_of_interest}_start-{time}')
-            classified_file = opath.join(slim_path, swifr_out_path, 'sweep', parameter_model_name+'_classified')
+            if with_hmm:
+                classified_file = opath.join(slim_path, hmm_out_path, 'sweep', parameter_model_name+'_hmm_classified.txt')
+            else:
+                classified_file = opath.join(slim_path, swifr_out_path, 'sweep', parameter_model_name+'_classified')
             df = pd.read_csv(classified_file, header=0, delim_whitespace=True, na_values='-998')
             #sw = df.loc[df['pos'] == sweep_pos]
             #li = df.loc[df['pos'] != sweep_pos]
