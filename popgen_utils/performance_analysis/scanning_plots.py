@@ -56,10 +56,12 @@ def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutra
         #read in hmm_classified files
         df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, with_hmm=True, hmm_out_path=hmm_out_path)
         figure_outpath = opath.join(slim_path, hmm_out_path)
-        figure_title1 = 'HMM_peakplot'
-        figure_title2 = 'HMM_boxplot'
+        #figure_title1 = 'HMM_peakplot'
+        #figure_title2 = 'HMM_boxplot'
         classes = ['P(neutral)', 'P(linked)', 'P(sweep)']
         for cl in classes:
+            figure_title1 = cl+'_HMM_peakplot'
+            figure_title2 = cl+'_HMM_boxplot'
             make_peakplot(df, cl, figure_outpath, figure_title1, sim_length, sweep_pos, numbins)
             make_boxplot(df, cl, figure_outpath, figure_title2, sim_length, sweep_pos, numbins)
 
