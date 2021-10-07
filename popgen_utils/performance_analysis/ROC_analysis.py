@@ -372,7 +372,7 @@ def get_tprate_fprate_viterbi(dataframe_neg, dataframe_pos, mode_neg, mode_pos):
     if tps+fns !=0 and fps+tns !=0:
         tp_rate = float(tps)/float(tps+fns)
         fp_rate = float(fps)/float(fps+tns)
-    reutrn [tp_rate, fp_rate]
+    return [tp_rate, fp_rate]
 
 def get_tprate_fprate_AODE(dataframe_neg, dataframe_pos, stat1, stat2, thresholds):
     '''
