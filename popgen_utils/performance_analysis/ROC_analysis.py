@@ -342,7 +342,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
 
 def get_tprate_fprate_viterbi(dataframe_neg, dataframe_pos, mode_neg, mode_pos):
     #Only one TP, FP pair -- for each row, have a prediction 1(neutral), 2/3(linked), or 4(sweep)
-    if mode_neg=='neutral' and mode_pos=='sweep':
+    if mode_neg==='neutral' and mode_pos=='sweep':
         #false positive would be a neutral row with a 4, true negative is a neutral row with a 1
         #true positive would be a sweep row with a 4, false negative would be sweep row that is a 1?
         #ignore linked rows, and neutral/sweep rows that are 2/3?
@@ -357,7 +357,7 @@ def get_tprate_fprate_viterbi(dataframe_neg, dataframe_pos, mode_neg, mode_pos):
         tns = len(dataframe_neg[dataframe_neg['state'] in [2,3]])
         fns = len(dataframe_pos[dataframe_pos['state'] in [2,3]])
         tps = len(dataframe_pos[dataframe_pos['state']==4])
-    elif mode_neg='neutral' and mode_pos=='linked':
+    elif mode_neg=='neutral' and mode_pos=='linked':
         #FP is neutral row with 2/3, TN is neutral row with 1
         #FN is linked row with 1, TP is linked row with 2/3
         fps = len(dataframe_neg[dataframe_neg['state'] in [2,3]])
