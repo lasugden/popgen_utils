@@ -272,6 +272,12 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs)
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
+        
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df[['P(sweep)','P(neutral)']], sweep_df[['P(sweep)','P(neutral)']], 'P(sweep)', 'P(neutral)', get_score_thresholds(
+            (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
+            (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
+        stat2rates['AODE'] = [aode_tprates, aode_fprates]
+
         if with_hmm:
             #Viterbi
             [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
@@ -283,10 +289,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             (sweep_df_hmm['P(sweep)'])/(sweep_df_hmm['P(sweep)']+sweep_df_hmm['P(neutral)']).tolist()))
             stat2rates['HMM'] = [hmm_tprates, hmm_fprates]
         
-        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df[['P(sweep)','P(neutral)']], sweep_df[['P(sweep)','P(neutral)']], 'P(sweep)', 'P(neutral)', get_score_thresholds(
-            (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
-            (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
-        stat2rates['AODE'] = [aode_tprates, aode_fprates]
+
 
         plot_ROC(stat2rates, out_path, title='Sweep v Neutral'+title_addon)
 
@@ -301,6 +304,11 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
 
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df[['P(sweep)','P(linked)']], sweep_df[['P(sweep)','P(linked)']], 'P(sweep)', 'P(linked)', get_score_thresholds(
+            linked_df['P(sweep)']/(linked_df['P(sweep)']+linked_df['P(linked)']).tolist()+
+            sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
+        stat2rates['AODE'] = [aode_tprates, aode_fprates]
+
         if with_hmm:
             [tp_rate, fp_rate] = get_tprate_fprate_viterbi(linked_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
             stat2rates['viterbi'] = [tp_rate, fp_rate]
@@ -308,12 +316,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(linked_df_hmm[['P(sweep)','P(linked)']], sweep_df_hmm[['P(sweep)','P(linked)']], 'P(sweep)', 'P(linked)', get_score_thresholds(
             (linked_df_hmm['P(sweep)'])/(linked_df_hmm['P(sweep)']+linked_df_hmm['P(linked)']).tolist()+
             (sweep_df_hmm['P(sweep)'])/(sweep_df_hmm['P(sweep)']+sweep_df_hmm['P(linked)']).tolist()))            
-            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]
-
-        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df[['P(sweep)','P(linked)']], sweep_df[['P(sweep)','P(linked)']], 'P(sweep)', 'P(linked)', get_score_thresholds(
-            linked_df['P(sweep)']/(linked_df['P(sweep)']+linked_df['P(linked)']).tolist()+
-            sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
-        stat2rates['AODE'] = [aode_tprates, aode_fprates]
+            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]        
 
         plot_ROC(stat2rates, out_path, title='Sweep v Linked'+title_addon)
 
@@ -328,6 +331,11 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
 
+        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df[['P(neutral)','P(linked)']], linked_df[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
+            neutral_df['P(linked)']/(neutral_df['P(linked)']+neutral_df['P(neutral)']).tolist()+
+            linked_df['P(linked)']/(linked_df['P(linked)']+linked_df['P(neutral)']).tolist()))
+        stat2rates['AODE'] = [aode_tprates, aode_fprates]
+
         if with_hmm:
             [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, linked_df_viterbi, mode_neg, mode_pos)
             stat2rates['viterbi'] = [tp_rate, fp_rate]
@@ -335,12 +343,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(linked_df_hmm[['P(neutral)','P(linked)']], sweep_df_hmm[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
             (neutral_df_hmm['P(linked)'])/(neutral_df_hmm['P(linked)']+neutral_df_hmm['P(neutral)']).tolist()+
             (linked_df_hmm['P(linked)'])/(linked_df_hmm['P(linked)']+linked_df_hmm['P(neutral)']).tolist()))   
-            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]
-
-        [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df[['P(neutral)','P(linked)']], linked_df[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
-            neutral_df['P(linked)']/(neutral_df['P(linked)']+neutral_df['P(neutral)']).tolist()+
-            linked_df['P(linked)']/(linked_df['P(linked)']+linked_df['P(neutral)']).tolist()))
-        stat2rates['AODE'] = [aode_tprates, aode_fprates]
+            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]        
 
         plot_ROC(stat2rates, out_path, title='Linked v Neutral'+title_addon)
 
