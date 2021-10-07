@@ -358,16 +358,16 @@ def get_tprate_fprate_viterbi(dataframe_neg, dataframe_pos, mode_neg, mode_pos):
         #false positive is a linked row with a 4, true negative is a linked row with 2/3
         #TP is a sweep row with a 4, FN is a sweep row with 2/3
         fps = len(dataframe_neg[dataframe_neg['state']==4])
-        tns = len(dataframe_neg[dataframe_neg['state'] in [2,3]])
-        fns = len(dataframe_pos[dataframe_pos['state'] in [2,3]])
+        tns = len(dataframe_neg[dataframe_neg['state'].isin([2,3])])
+        fns = len(dataframe_pos[dataframe_pos['state'].isin([2,3])])
         tps = len(dataframe_pos[dataframe_pos['state']==4])
     elif mode_neg=='neutral' and mode_pos=='linked':
         #FP is neutral row with 2/3, TN is neutral row with 1
         #FN is linked row with 1, TP is linked row with 2/3
-        fps = len(dataframe_neg[dataframe_neg['state'] in [2,3]])
+        fps = len(dataframe_neg[dataframe_neg['state'].isin([2,3])])
         tns = len(dataframe_neg[dataframe_neg['state']==1])
         fns = len(dataframe_pos[dataframe_pos['state']==1])
-        tps = len(dataframe_pos[dataframe_pos['state'] in [2,3]])       
+        tps = len(dataframe_pos[dataframe_pos['state'].isin([2,3])])       
 
     if tps+fns !=0 and fps+tns !=0:
         tp_rate = float(tps)/float(tps+fns)
