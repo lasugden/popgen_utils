@@ -213,7 +213,10 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
         base_path = opath.join(data_path, project_name)
         slim_path = opath.join(base_path, 'slim')
 
-    out_path = opath.join(slim_path,swifr_out_path)
+    if with_hmm:
+        out_path = opath.join(slim_path, hmm_out_path)
+    else:
+        out_path = opath.join(slim_path, swifr_out_path)
 
     #read_classified_files_all
     [neutral_df, sweep_df, linked_df] = read_classified_files_all(project_name, 
