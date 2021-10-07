@@ -28,6 +28,83 @@ except ImportError:
 #   df = df[names2use]
 #   return df
 
+def read_hmm_classified_files_all(project_name, hmm_out_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, data_path=None):
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+    base_path = opath.join(data_path, project_name)
+    slim_path = opath.join(base_path, 'slim')
+    slim_model_path_neutral = opath.join(slim_path, model_name_neutral)
+    slim_model_path_sweep = opath.join(slim_path, model_name_sweep)
+    #neutral and sweep params
+    yaml_file_neutral = open(opath.join(slim_path,f'{model_name_neutral}.yaml'))
+    params_neutral = yaml.load(yaml_file_neutral)
+    yaml_file_sweep = open(opath.join(slim_path,f'{model_name_sweep}.yaml'))
+    params_sweep = yaml.load(yaml_file_sweep)
+    #read in neutral files
+    df_list_neutral = []
+    for sim in range(int(params_neutral['sims'])):
+        parameter_model_name = (f'{model_name_neutral}_sim-{sim}')
+        viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'neutral', parameter_model_name+'_hmm_classified.txt')
+        df_list_neutral.append(pd.read_csv(viterbi_classified_file, header=0, delim_whitespace=True))
+    neutral_df = pd.concat(df_list_neutral)
+    #read in sweep files
+    df_list_sweeppos = []
+    df_list_linked = []
+    for scoeff in params_sweep['selection_coefficient']:
+        for time in params_sweep['sweep_time']:
+            parameter_model_name = (f'{model_name_sweep}_coeff-{scoeff}_'
+                                        f'pop-{pop_of_interest}_start-{time}')
+            viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'sweep', parameter_model_name+'_hmm_classified.txt')
+            df = pd.read_csv(classified_file, header=0, delim_whitespace=True)
+            sw = df.loc[df['pos'] == sweep_pos]
+            li = df.loc[df['pos'] != sweep_pos]
+            df_list_sweeppos.append(sw)
+            df_list_linked.append(li)
+    sweep_df = pd.concat(df_list_sweeppos)
+    linked_df = pd.concat(df_list_linked)
+
+
+    return neutral_df.sample(n=10000), sweep_df, linked_df.sample(n=10000)
+
+def read_viterbi_classified_files_all(project_name, hmm_out_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, data_path=None):
+    if data_path is None:
+        data_path = config.params()['paths']['data']
+    base_path = opath.join(data_path, project_name)
+    slim_path = opath.join(base_path, 'slim')
+    slim_model_path_neutral = opath.join(slim_path, model_name_neutral)
+    slim_model_path_sweep = opath.join(slim_path, model_name_sweep)
+    #neutral and sweep params
+    yaml_file_neutral = open(opath.join(slim_path,f'{model_name_neutral}.yaml'))
+    params_neutral = yaml.load(yaml_file_neutral)
+    yaml_file_sweep = open(opath.join(slim_path,f'{model_name_sweep}.yaml'))
+    params_sweep = yaml.load(yaml_file_sweep)
+    #read in neutral files
+    df_list_neutral = []
+    for sim in range(int(params_neutral['sims'])):
+        parameter_model_name = (f'{model_name_neutral}_sim-{sim}')
+        viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'neutral', parameter_model_name+'_viterbi_classified.txt')
+        df_list_neutral.append(pd.read_csv(viterbi_classified_file, header=0, delim_whitespace=True))
+    neutral_df = pd.concat(df_list_neutral)
+    #read in sweep files
+    df_list_sweeppos = []
+    df_list_linked = []
+    for scoeff in params_sweep['selection_coefficient']:
+        for time in params_sweep['sweep_time']:
+            parameter_model_name = (f'{model_name_sweep}_coeff-{scoeff}_'
+                                        f'pop-{pop_of_interest}_start-{time}')
+            viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'sweep', parameter_model_name+'_viterbi_classified.txt')
+            df = pd.read_csv(classified_file, header=0, delim_whitespace=True)
+            sw = df.loc[df['pos'] == sweep_pos]
+            li = df.loc[df['pos'] != sweep_pos]
+            df_list_sweeppos.append(sw)
+            df_list_linked.append(li)
+    sweep_df = pd.concat(df_list_sweeppos)
+    linked_df = pd.concat(df_list_linked)
+
+
+    return neutral_df.sample(n=10000), sweep_df, linked_df.sample(n=10000)
+
+
 def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, all_defined=False, data_path=None):
     '''
     project_name (str): name of project #gives the path
@@ -118,7 +195,7 @@ def get_score_thresholds(list_of_scores):
 
 
 def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest,
-                    mode_neg, mode_pos, all_defined=False, data_path=None):
+                    mode_neg, mode_pos, all_defined=False, data_path=None, with_hmm=False, hmm_out_path=None):
     ''' 
     project_name (str): name of project #gives the path
     swifr_out_path (str): where classified files live (top directories should correspond to neutral and sweep sims; relative to shared data path)
@@ -142,6 +219,13 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     [neutral_df, sweep_df, linked_df] = read_classified_files_all(project_name, 
         swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, all_defined)
         
+    #read hmm files
+    if with_hmm:
+        [neutral_df_viterbi, sweep_df_viterbi, linked_df_viterbi]=read_viterbi_classified_files_all(project_name,
+            hmm_out_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest)
+        [neutral_df_hmm, sweep_df_hmm, linked_df_hmm] = read_hmm_classified_files_all(project_name,
+            hmm_out_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest)
+
     file = open(opath.join(slim_path, swifr_train_path, 'component_stats.txt'))
     stats = file.read()
     file.close()
@@ -164,10 +248,11 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
     # linked_plinked_aode = neutral_df['P(linked)'].tolist()
     # stat2thresholds['P(sweep)'] = get_score_thresholds(neutral_psweep_aode+sweep_psweep_aode+linked_psweep_aode)
     # stat2thresholds['P(linked)'] = get_score_thresholds(neutral_pliinked_aode+linked_plinked_aode)
+    title_addon = ''
     if all_defined:
-        title_addon = ' All Statistics Defined'
-    else:
-        title_addon = ''
+        title_addon += ' All Statistics Defined'
+    if with_hmm:
+        title_addon += ' With HMM'
 
     if mode_neg == 'neutral' and mode_pos == 'sweep':
         #make ROC for sweep vs neutral
@@ -180,8 +265,17 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, sweep_df, stat, threshs)
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
-
-
+        if with_hmm:
+            #Viterbi
+            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
+            stat2rates['viterbi'] = [tp_rate, fp_rate]
+            
+            #HMM probabilities
+            [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(neutral_df_hmm[['P(sweep)','P(neutral)']], sweep_df_hmm[['P(sweep)','P(neutral)']], 'P(sweep)', 'P(neutral)', get_score_thresholds(
+            (neutral_df_hmm['P(sweep)'])/(neutral_df_hmm['P(sweep)']+neutral_df_hmm['P(neutral)']).tolist()+
+            (sweep_df_hmm['P(sweep)'])/(sweep_df_hmm['P(sweep)']+sweep_df_hmm['P(neutral)']).tolist()))
+            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]
+        
         [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df[['P(sweep)','P(neutral)']], sweep_df[['P(sweep)','P(neutral)']], 'P(sweep)', 'P(neutral)', get_score_thresholds(
             (neutral_df['P(sweep)'])/(neutral_df['P(sweep)']+neutral_df['P(neutral)']).tolist()+
             (sweep_df['P(sweep)'])/(sweep_df['P(sweep)']+sweep_df['P(neutral)']).tolist()))
@@ -199,6 +293,16 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             [tp_rates, fp_rates] = get_tprate_fprate(linked_df, sweep_df, stat, get_score_thresholds(linked_df[stat].tolist()+sweep_df[stat].tolist()))
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
+
+        if with_hmm:
+            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(linked_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
+            stat2rates['viterbi'] = [tp_rate, fp_rate]
+            #HMM probabilities
+            [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(linked_df_hmm[['P(sweep)','P(linked)']], sweep_df_hmm[['P(sweep)','P(linked)']], 'P(sweep)', 'P(linked)', get_score_thresholds(
+            (linked_df_hmm['P(sweep)'])/(linked_df_hmm['P(sweep)']+linked_df_hmm['P(linked)']).tolist()+
+            (sweep_df_hmm['P(sweep)'])/(sweep_df_hmm['P(sweep)']+sweep_df_hmm['P(linked)']).tolist()))            
+            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]
+
         [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(linked_df[['P(sweep)','P(linked)']], sweep_df[['P(sweep)','P(linked)']], 'P(sweep)', 'P(linked)', get_score_thresholds(
             linked_df['P(sweep)']/(linked_df['P(sweep)']+linked_df['P(linked)']).tolist()+
             sweep_df['P(sweep)']/(sweep_df['P(sweep)']+sweep_df['P(linked)']).tolist()))
@@ -216,12 +320,52 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
             [tp_rates, fp_rates] = get_tprate_fprate(neutral_df, linked_df, stat, get_score_thresholds(neutral_df[stat].tolist()+linked_df[stat].tolist()))
             stat2rates[stat][0] = tp_rates
             stat2rates[stat][1] = fp_rates
+
+        if with_hmm:
+            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, linked_df_viterbi, mode_neg, mode_pos)
+            stat2rates['viterbi'] = [tp_rate, fp_rate]
+            #HMM probabilities
+            [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(linked_df_hmm[['P(neutral)','P(linked)']], sweep_df_hmm[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
+            (neutral_df_hmm['P(linked)'])/(neutral_df_hmm['P(linked)']+neutral_df_hmm['P(neutral)']).tolist()+
+            (linked_df_hmm['P(linked)'])/(linked_df_hmm['P(linked)']+linked_df_hmm['P(neutral)']).tolist()))   
+            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]
+
         [aode_tprates, aode_fprates] = get_tprate_fprate_AODE(neutral_df[['P(neutral)','P(linked)']], linked_df[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
             neutral_df['P(linked)']/(neutral_df['P(linked)']+neutral_df['P(neutral)']).tolist()+
             linked_df['P(linked)']/(linked_df['P(linked)']+linked_df['P(neutral)']).tolist()))
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
         plot_ROC(stat2rates, out_path, title='Linked v Neutral'+title_addon)
+
+def get_tprate_fprate_viterbi(dataframe_neg, dataframe_pos, mode_neg, mode_pos):
+    #Only one TP, FP pair -- for each row, have a prediction 1(neutral), 2/3(linked), or 4(sweep)
+    if mode_neg=='neutral' and mode_pos=='sweep':
+        #false positive would be a neutral row with a 4, true negative is a neutral row with a 1
+        #true positive would be a sweep row with a 4, false negative would be sweep row that is a 1?
+        #ignore linked rows, and neutral/sweep rows that are 2/3?
+        fps = len(dataframe_neg[dataframe_neg['state']==4])
+        tns = len(dataframe_neg[dataframe_neg['state']==1])
+        fns = len(dataframe_pos[dataframe_pos['state']==1])
+        tps = len(dataframe_pos[dataframe_pos['state']==4])
+    elif mode_neg=='linked' and mode_pos=='sweep':
+        #false positive is a linked row with a 4, true negative is a linked row with 2/3
+        #TP is a sweep row with a 4, FN is a sweep row with 2/3
+        fps = len(dataframe_neg[dataframe_neg['state']==4])
+        tns = len(dataframe_neg[dataframe_neg['state'] in [2,3]])
+        fns = len(dataframe_pos[dataframe_pos['state'] in [2,3]])
+        tps = len(dataframe_pos[dataframe_pos['state']==4])
+    elif mode_neg='neutral' and mode_pos=='linked':
+        #FP is neutral row with 2/3, TN is neutral row with 1
+        #FN is linked row with 1, TP is linked row with 2/3
+        fps = len(dataframe_neg[dataframe_neg['state'] in [2,3]])
+        tns = len(dataframe_neg[dataframe_neg['state']==1])
+        fns = len(dataframe_pos[dataframe_pos['state']==1])
+        tps = len(dataframe_pos[dataframe_pos['state'] in [2,3]])       
+
+    if tps+fns !=0 and fps+tns !=0:
+        tp_rate = float(tps)/float(tps+fns)
+        fp_rate = float(fps)/float(fps+tns)
+    reutrn [tp_rate, fp_rate]
 
 def get_tprate_fprate_AODE(dataframe_neg, dataframe_pos, stat1, stat2, thresholds):
     '''
