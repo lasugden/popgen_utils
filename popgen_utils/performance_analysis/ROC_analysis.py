@@ -106,7 +106,7 @@ def read_viterbi_classified_files_all(project_name, hmm_out_path, model_name_neu
     linked_df = pd.concat(df_list_linked)
 
 
-    return neutral_df.sample(n=10000), sweep_df, linked_df.sample(n=10000)
+    return neutral_df.sample(n=100000), sweep_df, linked_df.sample(n=100000)
 
 
 def read_classified_files_all(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, all_defined=False, data_path=None):
@@ -279,16 +279,15 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
         if with_hmm:
-            #Viterbi
-            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
-            stat2rates['viterbi'] = [tp_rate, fp_rate]
             
             #HMM probabilities
             [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(neutral_df_hmm[['P(sweep)','P(neutral)']], sweep_df_hmm[['P(sweep)','P(neutral)']], 'P(sweep)', 'P(neutral)', get_score_thresholds(
             (neutral_df_hmm['P(sweep)'])/(neutral_df_hmm['P(sweep)']+neutral_df_hmm['P(neutral)']).tolist()+
             (sweep_df_hmm['P(sweep)'])/(sweep_df_hmm['P(sweep)']+sweep_df_hmm['P(neutral)']).tolist()))
             stat2rates['HMM'] = [hmm_tprates, hmm_fprates]
-        
+            #Viterbi
+            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
+            stat2rates['viterbi'] = [tp_rate, fp_rate]        
 
 
         plot_ROC(stat2rates, out_path, title='Sweep v Neutral'+title_addon)
@@ -310,13 +309,15 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
         if with_hmm:
-            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(linked_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
-            stat2rates['viterbi'] = [tp_rate, fp_rate]
+
             #HMM probabilities
             [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(linked_df_hmm[['P(sweep)','P(linked)']], sweep_df_hmm[['P(sweep)','P(linked)']], 'P(sweep)', 'P(linked)', get_score_thresholds(
             (linked_df_hmm['P(sweep)'])/(linked_df_hmm['P(sweep)']+linked_df_hmm['P(linked)']).tolist()+
             (sweep_df_hmm['P(sweep)'])/(sweep_df_hmm['P(sweep)']+sweep_df_hmm['P(linked)']).tolist()))            
-            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]        
+            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]  
+
+            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(linked_df_viterbi, sweep_df_viterbi, mode_neg, mode_pos)
+            stat2rates['viterbi'] = [tp_rate, fp_rate]      
 
         plot_ROC(stat2rates, out_path, title='Sweep v Linked'+title_addon)
 
@@ -337,13 +338,14 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
         stat2rates['AODE'] = [aode_tprates, aode_fprates]
 
         if with_hmm:
-            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, linked_df_viterbi, mode_neg, mode_pos)
-            stat2rates['viterbi'] = [tp_rate, fp_rate]
             #HMM probabilities
             [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(linked_df_hmm[['P(neutral)','P(linked)']], sweep_df_hmm[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
             (neutral_df_hmm['P(linked)'])/(neutral_df_hmm['P(linked)']+neutral_df_hmm['P(neutral)']).tolist()+
             (linked_df_hmm['P(linked)'])/(linked_df_hmm['P(linked)']+linked_df_hmm['P(neutral)']).tolist()))   
-            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]        
+            stat2rates['HMM'] = [hmm_tprates, hmm_fprates]  
+
+            [tp_rate, fp_rate] = get_tprate_fprate_viterbi(neutral_df_viterbi, linked_df_viterbi, mode_neg, mode_pos)
+            stat2rates['viterbi'] = [tp_rate, fp_rate]      
 
         plot_ROC(stat2rates, out_path, title='Linked v Neutral'+title_addon)
 
