@@ -103,12 +103,13 @@ def read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutra
                 classified_file = opath.join(slim_path, hmm_out_path, 'sweep', parameter_model_name+'_hmm_classified.txt')
             else:
                 classified_file = opath.join(slim_path, swifr_out_path, 'sweep', parameter_model_name+'_classified')
-            df = pd.read_csv(classified_file, header=0, delim_whitespace=True, na_values='-998')
-            #sw = df.loc[df['pos'] == sweep_pos]
-            #li = df.loc[df['pos'] != sweep_pos]
-            #df_list_sweeppos.append(sw)
-            #df_list_linked.append(li)
-            df_list.append(df)
+            if opath.exists(classified_file):
+                df = pd.read_csv(classified_file, header=0, delim_whitespace=True, na_values='-998')
+                #sw = df.loc[df['pos'] == sweep_pos]
+                #li = df.loc[df['pos'] != sweep_pos]
+                #df_list_sweeppos.append(sw)
+                #df_list_linked.append(li)
+                df_list.append(df)
     #sweep_df = pd.concat(df_list_sweeppos)
     #linked_df = pd.concat(df_list_linked)
     df = pd.concat(df_list)
