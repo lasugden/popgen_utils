@@ -54,7 +54,7 @@ def make_plots(project_name, swifr_out_path, swifr_train_path, model_name_neutra
 
     else:
         #read in hmm_classified files
-        df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, with_hmm=True, hmm_out_path)
+        df = read_files(project_name, swifr_out_path, swifr_train_path, model_name_neutral, model_name_sweep, sweep_pos, pop_of_interest, sim_length, with_hmm=True, hmm_out_path=hmm_out_path)
         figure_outpath = opath.join(slim_path, hmm_out_path)
         figure_title1 = 'HMM_peakplot'
         figure_title2 = 'HMM_boxplot'
