@@ -339,7 +339,7 @@ def make_ROC_curves(project_name, swifr_out_path, swifr_train_path, model_name_n
 
         if with_hmm:
             #HMM probabilities
-            [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(linked_df_hmm[['P(neutral)','P(linked)']], sweep_df_hmm[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
+            [hmm_tprates, hmm_fprates] = get_tprate_fprate_AODE(neutral_df_hmm[['P(neutral)','P(linked)']], linked_df_hmm[['P(neutral)','P(linked)']], 'P(linked)', 'P(neutral)', get_score_thresholds(
             (neutral_df_hmm['P(linked)'])/(neutral_df_hmm['P(linked)']+neutral_df_hmm['P(neutral)']).tolist()+
             (linked_df_hmm['P(linked)'])/(linked_df_hmm['P(linked)']+linked_df_hmm['P(neutral)']).tolist()))   
             stat2rates['HMM'] = [hmm_tprates, hmm_fprates]  
