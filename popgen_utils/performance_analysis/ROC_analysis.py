@@ -44,8 +44,9 @@ def read_hmm_classified_files_all(project_name, hmm_out_path, model_name_neutral
     df_list_neutral = []
     for sim in range(int(params_neutral['sims'])):
         parameter_model_name = (f'{model_name_neutral}_sim-{sim}')
-        viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'neutral', parameter_model_name+'_hmm_classified.txt')
-        df_list_neutral.append(pd.read_csv(viterbi_classified_file, header=0, delim_whitespace=True))
+        hmm_classified_file = opath.join(slim_path, hmm_out_path, 'neutral', parameter_model_name+'_hmm_classified.txt')
+        if opath.exists(hmm_classified_file):
+            df_list_neutral.append(pd.read_csv(hmm_classified_file, header=0, delim_whitespace=True))
     neutral_df = pd.concat(df_list_neutral)
     #read in sweep files
     df_list_sweeppos = []
@@ -54,12 +55,13 @@ def read_hmm_classified_files_all(project_name, hmm_out_path, model_name_neutral
         for time in params_sweep['sweep_time']:
             parameter_model_name = (f'{model_name_sweep}_coeff-{scoeff}_'
                                         f'pop-{pop_of_interest}_start-{time}')
-            viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'sweep', parameter_model_name+'_hmm_classified.txt')
-            df = pd.read_csv(classified_file, header=0, delim_whitespace=True)
-            sw = df.loc[df['pos'] == sweep_pos]
-            li = df.loc[df['pos'] != sweep_pos]
-            df_list_sweeppos.append(sw)
-            df_list_linked.append(li)
+            hmm_classified_file = opath.join(slim_path, hmm_out_path, 'sweep', parameter_model_name+'_hmm_classified.txt')
+            if opath.exists(hmm_classified_file):
+                df = pd.read_csv(hmm_classified_file, header=0, delim_whitespace=True)
+                sw = df.loc[df['pos'] == sweep_pos]
+                li = df.loc[df['pos'] != sweep_pos]
+                df_list_sweeppos.append(sw)
+                df_list_linked.append(li)
     sweep_df = pd.concat(df_list_sweeppos)
     linked_df = pd.concat(df_list_linked)
 
@@ -83,7 +85,8 @@ def read_viterbi_classified_files_all(project_name, hmm_out_path, model_name_neu
     for sim in range(int(params_neutral['sims'])):
         parameter_model_name = (f'{model_name_neutral}_sim-{sim}')
         viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'neutral', parameter_model_name+'_viterbi_classified.txt')
-        df_list_neutral.append(pd.read_csv(viterbi_classified_file, header=0, delim_whitespace=True))
+        if opath.exists(viterbi_classified_file):
+            df_list_neutral.append(pd.read_csv(viterbi_classified_file, header=0, delim_whitespace=True))
     neutral_df = pd.concat(df_list_neutral)
     #read in sweep files
     df_list_sweeppos = []
@@ -93,11 +96,12 @@ def read_viterbi_classified_files_all(project_name, hmm_out_path, model_name_neu
             parameter_model_name = (f'{model_name_sweep}_coeff-{scoeff}_'
                                         f'pop-{pop_of_interest}_start-{time}')
             viterbi_classified_file = opath.join(slim_path, hmm_out_path, 'sweep', parameter_model_name+'_viterbi_classified.txt')
-            df = pd.read_csv(classified_file, header=0, delim_whitespace=True)
-            sw = df.loc[df['pos'] == sweep_pos]
-            li = df.loc[df['pos'] != sweep_pos]
-            df_list_sweeppos.append(sw)
-            df_list_linked.append(li)
+            if opath.exists(viterbi_classified_file):
+                df = pd.read_csv(viterbi_classified_file, header=0, delim_whitespace=True)
+                sw = df.loc[df['pos'] == sweep_pos]
+                li = df.loc[df['pos'] != sweep_pos]
+                df_list_sweeppos.append(sw)
+                df_list_linked.append(li)
     sweep_df = pd.concat(df_list_sweeppos)
     linked_df = pd.concat(df_list_linked)
 
