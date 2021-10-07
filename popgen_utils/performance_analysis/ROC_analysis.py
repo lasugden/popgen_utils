@@ -466,7 +466,7 @@ def plot_ROC(stat2rates, out_path, title):
         statlist.append(stat)
         color_index += 1
         #false potitives on x-axis, true positives on y
-        plt.plot(stat2rates[stat][1], stat2rates[stat][0], 'o-', color=colors2use[color_index], linewidth=2)
+        plt.plot(stat2rates[stat][1], stat2rates[stat][0], 'o-', color=colors2use[color_index], linewidth=1)
         plt.xlabel('False Positive Rate')
         plt.ylabel('True Positive Rate')
     plt.legend(statlist)
