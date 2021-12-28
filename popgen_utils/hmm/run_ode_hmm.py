@@ -21,7 +21,7 @@ from popgen_utils.hmm.ode_hmm import Stats, Mix1D
 
 
 def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest,
-    swifr_trained_path, out_path, data_path=None):
+    swifr_trained_path, out_path, trans_type='strict', data_path=None):
     '''
     project_name (str): name of project (directory)
     model_name (str): e.g. gravel_neutral_400kb
@@ -29,6 +29,7 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
     pop_of_interest (str): in the format 'pN' where N is integer in 1-3
     swifr_trained_path (str): path where trained model lives
     out_path (str): path for the output (relative path from common directory)
+    trans_type (str): 'strict' or 'relaxed' to determine relative difficulty of moving into linked/sweep from neutral
     '''
 
     #make out path if it doesn't exist
@@ -46,7 +47,7 @@ def run_ode_hmm_on_training_data(project_name, model_name, type, pop_of_interest
     params = yaml.load(yaml_file)
 
     path2trained = opath.join(slim_path, swifr_trained_path)
-    HMM = ode_hmm.ODE_HMM(path2trained) #class ODE_HMM -- can use functions within
+    HMM = ode_hmm.ODE_HMM(path2trained, trans_type) #class ODE_HMM -- can use functions within
     print('mkdir -p '+output_path)
     if not os.path.exists(output_path):
         os.makedirs(output_path)

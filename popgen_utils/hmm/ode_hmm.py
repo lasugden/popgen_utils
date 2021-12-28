@@ -31,48 +31,80 @@ class ODE_HMM:
     emissions use ODE terms -- imputation is done based on "ode_compensation"
     '''
 
-    def __init__(self, path2trained):
+    def __init__(self, path2trained, trans_type='strict'):
         self._initialize_AODE(path2trained)
         self.forcesweep=True
         self.hmmstate2trainingstate = {'Neutral':'neutral','LinkedLeft':'linked','LinkedRight':'linked','Sweep':'sweep'}
         self.hmmstate2num = {'StartEnd':0,'Neutral':1,'LinkedLeft':2,'LinkedRight':3,'Sweep':4}
         self.num2hmmstate = {y:x for x,y in self.hmmstate2num.items()}
         self.hmmstates = self.hmmstate2num.keys()
-        self.set_transitions()
+        self.set_transitions(trans_type)
 
 
-    def set_transitions(self):
-        self.transitions = [[0 for j in range(len(self.hmmstates))] for i in range(len(self.hmmstates))]
+    def set_transitions(self, trans_type='strict'):
+        if trans_type == 'strict':
+            self.transitions = [[0 for j in range(len(self.hmmstates))] for i in range(len(self.hmmstates))]
 
-        #Start/End goes to Neutral (1) or LinkedLeft (2)
-        self.transitions[0][1] = 0.99999
-        self.transitions[0][2] = 0.00001
+            #Start/End goes to Neutral (1) or LinkedLeft (2)
+            self.transitions[0][1] = 0.99999
+            self.transitions[0][2] = 0.00001
 
-        #Neutral goes to Neutral (1) or LinkedLeft (2) or StartEnd (0)
-        # self.transitions[1][1] = 0.999998
-        # self.transitions[1][2] = 0.000001
-        # self.transitions[1][0] = 0.000001
+            #Neutral goes to Neutral (1) or LinkedLeft (2) or StartEnd (0)
+            # self.transitions[1][1] = 0.999998
+            # self.transitions[1][2] = 0.000001
+            # self.transitions[1][0] = 0.000001
 
-        self.transitions[1][1] = 0.999998999
-        self.transitions[1][2] = 0.000000001
-        self.transitions[1][0] = 0.000001       
+            self.transitions[1][1] = 0.999998999
+            self.transitions[1][2] = 0.000000001
+            self.transitions[1][0] = 0.000001       
 
-        if self.forcesweep:
-        #LinkedLeft goes to LinkedLeft (2) or Sweep (4)
-            self.transitions[2][2] = 0.999
-            self.transitions[2][4] = 0.001
+            if self.forcesweep:
+            #LinkedLeft goes to LinkedLeft (2) or Sweep (4)
+                self.transitions[2][2] = 0.999
+                self.transitions[2][4] = 0.001
 
-        else: #allow back to neutral
-            self.transitions[2][2] = 0.998
-            self.transitions[2][4] = 0.001
-            self.transitions[2][1] = 0.002
+            else: #allow back to neutral
+                self.transitions[2][2] = 0.998
+                self.transitions[2][4] = 0.001
+                self.transitions[2][1] = 0.002
 
-        #Sweep goes to LinkedRight (3)
-        self.transitions[4][3] = 1
+            #Sweep goes to LinkedRight (3)
+            self.transitions[4][3] = 1
 
-        #LinkedRight goes to LinkedRight (3) or Neutral (1)
-        self.transitions[3][3] = 0.999
-        self.transitions[3][1] = 0.001  
+            #LinkedRight goes to LinkedRight (3) or Neutral (1)
+            self.transitions[3][3] = 0.999
+            self.transitions[3][1] = 0.001 
+
+        elif trans_type == 'relaxed': #easier to move into linked/sweep
+            self.transitions = [[0 for j in range(len(self.hmmstates))] for i in range(len(self.hmmstates))]
+
+            #Start/End goes to Neutral (1) or LinkedLeft (2)
+            self.transitions[0][1] = 0.99999
+            self.transitions[0][2] = 0.00001
+
+            #Neutral goes to Neutral (1) or LinkedLeft (2) or StartEnd (0)
+
+            self.transitions[1][1] = 0.999998
+            self.transitions[1][2] = 0.000001
+            self.transitions[1][0] = 0.000001       
+
+            if self.forcesweep:
+            #LinkedLeft goes to LinkedLeft (2) or Sweep (4)
+                self.transitions[2][2] = 0.999
+                self.transitions[2][4] = 0.001
+
+            else: #allow back to neutral
+                self.transitions[2][2] = 0.998
+                self.transitions[2][4] = 0.001
+                self.transitions[2][1] = 0.002
+
+            #Sweep goes to LinkedRight (3)
+            self.transitions[4][3] = 1
+
+            #LinkedRight goes to LinkedRight (3) or Neutral (1)
+            self.transitions[3][3] = 0.999
+            self.transitions[3][1] = 0.001             
+
 
     def logsumexp(self,sumvec): #sumvec is log of entries in the sum (x_i's in log-sum-exp)
         #e.g. logV[i-1][j']+log(t[j'][j])
