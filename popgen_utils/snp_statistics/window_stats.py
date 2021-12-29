@@ -42,8 +42,7 @@ def run_window_stats(project_name, model_name, type, windowsize, data_path=None)
     	for coeff in scoeffs:
     		for time in times:
     			for pop in pops_of_interest:
-    				parameter_model_name = (f'{model_name}_coeff-{coeff}_'
-                                        f'pop-{pop}_start-{time}')
+    				parameter_model_name = (f'{model_name}_coeff-{coeff}_'f'pop-{pop}_start-{time}')
                     filename = opath.join(slim_model_path, f'{parameter_model_name}')
                     outpath = filename+'_window_allstats.txt'
                     df = compute_sfs(filename, pop, windowsize)
@@ -64,7 +63,7 @@ def run_window_stats(project_name, model_name, type, windowsize, data_path=None)
 
 
 def compute_sfs(filename, pop, windowsize):
-	
+
 	windowsize=int(windowsize)
 	mapfile = filename+'_map.txt'
 	hapfile = filename+'_p'+pop+'.hap' #only hapfile for pop of interest
