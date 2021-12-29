@@ -51,7 +51,7 @@ def run_window_stats(project_name, model_name, type, windowsize, data_path=None)
     elif type == 'neutral':
         sims = params['sims']
         for sim in range(int(sims)):
-            for pop in ['1','2','3']:
+            for pop in ['p1','p2','p3']:
                 parameter_model_name = (f'{model_name}_sim-{sim}')
                 filename = opath.join(slim_model_path, parameter_model_name)
                 outpath = filename+'_window_allstats.txt'
@@ -66,7 +66,7 @@ def compute_sfs(filename, pop, windowsize):
 
     windowsize=int(windowsize)
     mapfile = filename+'_map.txt'
-    hapfile = filename+'_p'+pop+'.hap' #only hapfile for pop of interest
+    hapfile = filename+'_'+pop+'.hap' #only hapfile for pop of interest
     df1 = pd.read_csv(mapfile, sep=' ', header=None, names=['chrom','snpname','mapdist','pos'])
     positions = df1['pos'].tolist()
     df2 = pd.read_csv(hapfile, sep=' ', header=None)
