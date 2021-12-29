@@ -92,7 +92,7 @@ def compute_sfs(filename, pop, windowsize):
         end_pos = (window_i+1)*windowsize
         sub_df = df1[df1['pos'].isin(range(start_pos, end_pos))]
         dafs = sub_df['dafs'].tolist()
-        etas = [len([x for x in dafs if x=i]) for i in range(nchroms+1)] #note: includes fixed mutations
+        etas = [len([x for x in dafs if int(x)==i]) for i in range(nchroms+1)] #note: includes fixed mutations
 
         Start.append(start_pos)
         End.append(end_pos)
