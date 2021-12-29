@@ -50,13 +50,13 @@ def run_window_stats(project_name, model_name, type, windowsize, data_path=None)
 
     elif type == 'neutral':
         sims = params['sims']
-            for sim in range(int(sims)):
-                for pop in ['1','2','3']:
-                    parameter_model_name = (f'{model_name}_sim-{sim}')
-                    filename = opath.join(slim_model_path, parameter_model_name)
-                    outpath = filename+'_window_allstats.txt'
-                    df = compute_sfs(filename, pop, windowsize)
-                    df.to_csv(outpath, sep=' ')
+        for sim in range(int(sims)):
+            for pop in ['1','2','3']:
+                parameter_model_name = (f'{model_name}_sim-{sim}')
+                filename = opath.join(slim_model_path, parameter_model_name)
+                outpath = filename+'_window_allstats.txt'
+                df = compute_sfs(filename, pop, windowsize)
+                df.to_csv(outpath, sep=' ')
 
 
 
